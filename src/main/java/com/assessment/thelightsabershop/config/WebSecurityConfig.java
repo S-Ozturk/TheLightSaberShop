@@ -60,8 +60,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .build();
     	UserDetails jedi =
                 User.withDefaultPasswordEncoder()
-                   .username("jedi")
-                   .password("password")
+                   .username("jedi@master.com")
+                   .password("pass")
                    .roles("USER")
                    .build();
         UserDetails admin =

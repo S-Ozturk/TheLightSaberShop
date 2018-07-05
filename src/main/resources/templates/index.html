@@ -11,6 +11,17 @@
 <link href="css/custom.css" rel="stylesheet">
 <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
 <script type="text/javascript">	
+	//Limiting setting menu just for admin 
+	function checkMenu(){
+		if(![[${#httpServletRequest.isUserInRole("JEDIMASTER")}]]){
+			removeElement("jediMasterMenu");
+		};
+		if(![[${#httpServletRequest.isUserInRole("JEDIMASTER")}]] || ![[${#httpServletRequest.isUserInRole("USER")}]]){
+			removeElement("logoutMenu");
+			removeElement("saberListMenu");
+		};
+	};
+	
 	
 	//---------------------------------------------//
 	//   R E U S A B L E   C O D E S   S T A R T   //
@@ -96,15 +107,6 @@
 		xhttp.send(data);
 	};
 	
-	
-	//Limiting setting menu just for admin 
-	function checkMenu(){
-		alert([[${#httpServletRequest.getUserPrincipal()}]] + " - " + [[${#httpServletRequest.isUserInRole("ROLE_ADMIN")}]])
-		if(![[${#httpServletRequest.isUserInRole("ROLE_ADMIN")}]]){
-			removeElement("jediMasterMenu");
-		};
-	};
-	
 	//Removing any elements by id from page
 	function removeElement(id){
 		var element = document.getElementById(id);
@@ -121,7 +123,7 @@
 	  <div class="container-fluid">
 	    <ul id="mainMenu" class="nav navbar-nav">
 	      <li><a href="#">Light Sabers</a></li>
-	      <li class="dropdown">
+	      <li id="saberListMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Get List Of Light Sabers<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="#">Action</a></li>
@@ -136,7 +138,7 @@
         </li>
 	    </ul>
 	    <ul class="nav navbar-nav navbar-right">
-	      <li><a th:href="@{/SignUp}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+	      <li id="signUpMenu" ><a th:href="@{/SignUp}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
 	      <li id="loginMenu" class="dropdown">
 	      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-log-in"></span> Login</a>
           <ul class="dropdown-menu">
@@ -148,12 +150,12 @@
 		        </div>
 		        <form th:action="@{/login}" method="post">
 		        	<div class="form-group margin-right-5 margin-left-5">
-						<label for="exampleDropdownFormEmail2" style="color:black">Email address</label>
-						<input type="email" class="form-control" id="exampleDropdownFormEmail2" placeholder="email@example.com">
+						<label for="DropdownFormEmail2" style="color:black">Email address</label>
+						<input type="email" name="username" class="form-control" id="DropdownFormEmail2" placeholder="email@example.com">
 					</div>
 					<div class="form-group margin-right-5 margin-left-5">
-						<label for="exampleDropdownFormPassword2" style="color:black">Password</label>
-						<input type="password" class="form-control" id="exampleDropdownFormPassword2" placeholder="Password">
+						<label for="DropdownFormPassword2" style="color:black">Password</label>
+						<input type="password" name="password" class="form-control" id="DropdownFormPassword2" placeholder="Password">
 					</div>
 					<div class="text-center margin-right-5 margin-left-5">
 						<button type="submit" class="btn btn-default btn-lg btn-block">Sign in</button>
@@ -162,7 +164,7 @@
         	</li>
           </ul>
         </li>
-        <li><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+        <li id="logoutMenu"><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 	    </ul>
 	  </div>
 	</nav>

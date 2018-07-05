@@ -27,10 +27,8 @@ public class SimpleSecurityController {
         return inMemoryUserDetailsManager.userExists(username);
     }
 
-    public String add(String username, String password) {
+    public void add(String username, String password) {
     	inMemoryUserDetailsManager.createUser(User.withDefaultPasswordEncoder().username(username).password(password).roles("USER").build());
-        //inMemoryUserDetailsManager.createUser(new User(username, configuredPassword, new ArrayList<GrantedAuthority>()));
         System.out.println("Add user inMemoryUserDetailsManager is working for - " + username + "- password : "+ password);
-        return "added";
     }
 }

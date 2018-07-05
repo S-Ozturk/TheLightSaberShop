@@ -5,7 +5,6 @@ import java.util.Calendar;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.assessment.thelightsabershop.config.SimpleSecurityController;
 import com.assessment.thelightsabershop.domain.User;
@@ -22,10 +21,12 @@ public class UserService {
 	@Autowired SimpleSecurityController simpleSecurityController;
 
 	public String addNewUser (User user) {
+		//Adding registration date for the long term because users age will be different next year 
 		Calendar now = Calendar.getInstance();
 		int year = now.get(Calendar.YEAR);
 		user.setRegistrationYear(year);
 		User result = userRepository.save(user);
+		//Adding user to simpleSecurityController to let the user to be able to use his/her account
 		simpleSecurityController.add(result.getEmail(), user.getPassword());
 		return "Saved";
 	}
@@ -34,6 +35,7 @@ public class UserService {
 		return userRepository.findAll();
 	}
 	
+	//Init user is for adding all the users on the database to simpleSecurityController when application restarts
 	public void initUsers() {
 		Iterable<User> users = userRepository.findAll();
 		for(User u: users) {

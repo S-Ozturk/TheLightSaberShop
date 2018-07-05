@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Light Saber Shop</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/custom.css" rel="stylesheet">
+<link rel="shortcut icon" type="image/png" href="/favicon.png"/>
+<script type="text/javascript">	
+	
+	//---------------------------------------------//
+	//   R E U S A B L E   C O D E S   S T A R T   //
+	//---------------------------------------------//
+	
+	
+	//For getting data as json
+	function getDataJson(api) {
+		var myObj, x, txt = "";
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = JSON.parse(this.responseText);
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/api/" + api);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
+	//For getting data as json !!Didnt verified that yet its working!!
+	function getDataXml(api) {
+		var myObj, x, txt = "";
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = XML.parse(this.responseText);
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/api/" + api);
+		xhttp.setRequestHeader("Content-type", "application/xml");
+		xhttp.send();
+	}
+
+	//For posting data
+	function postData(api,data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 202) {
+				document.getElementById("Container").innerHTML = this.responseText+" Item Added";
+			}
+		};
+		xhttp.open("POST", "http://localhost:8082/api/" + api, true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(data);
+	}
+	
+	//For posting data
+	function postImage(data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 202) {
+				
+			}
+		};
+		xhttp.open("POST", "http://localhost:8082/upload" , true);
+		xhttp.setRequestHeader("Content-type", "multipart/form-data");
+		xhttp.send(data);
+	}
+	
+	//For updating data
+	function putData(api,data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 202) {
+
+			}
+		};
+		xhttp.open("PUT", "http://localhost:8082/api/" + api, true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(data);
+	}
+	
+	//For deleting data
+	function deleteData(api,data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 204) {
+			};
+		};
+		xhttp.open("DELETE", "http://localhost:8082/api/" + api, true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(data);
+	};
+	
+	
+	//Limiting setting menu just for admin 
+	function checkMenu(){
+		alert([[${#httpServletRequest.getUserPrincipal()}]] + " - " + [[${#httpServletRequest.isUserInRole("ROLE_ADMIN")}]])
+		if(![[${#httpServletRequest.isUserInRole("ROLE_ADMIN")}]]){
+			removeElement("jediMasterMenu");
+		};
+	};
+	
+	//Removing any elements by id from page
+	function removeElement(id){
+		var element = document.getElementById(id);
+		element.parentNode.removeChild(element);
+	}
+	
+	//---------------------------------------------//
+	//     R E U S A B L E   C O D E S   E N D     //
+	//---------------------------------------------//
+</script>
+</head>
+<body onload="checkMenu()">
+	<nav class="navbar navbar-default ">
+	  <div class="container-fluid">
+	    <ul id="mainMenu" class="nav navbar-nav">
+	      <li><a href="#">Light Sabers</a></li>
+	      <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Get List Of Light Sabers<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Action</a></li>
+          </ul>
+        </li>
+        <li id="jediMasterMenu" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jedi Master Menu<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="#">Add a new light saber</a></li>
+            <li><a href="#">Add light saber(s) from file</a></li>
+          </ul>
+        </li>
+	    </ul>
+	    <ul class="nav navbar-nav navbar-right">
+	      <li><a th:href="@{/SignUp}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+	      <li id="loginMenu" class="dropdown">
+	      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-log-in"></span> Login</a>
+          <ul class="dropdown-menu">
+            <li><div th:if="${param.error}">
+		            Invalid username and password.
+		        </div>
+		        <div th:if="${param.logout}">
+		            You have been logged out.
+		        </div>
+		        <form th:action="@{/login}" method="post">
+		        	<div class="form-group margin-right-5 margin-left-5">
+						<label for="exampleDropdownFormEmail2" style="color:black">Email address</label>
+						<input type="email" class="form-control" id="exampleDropdownFormEmail2" placeholder="email@example.com">
+					</div>
+					<div class="form-group margin-right-5 margin-left-5">
+						<label for="exampleDropdownFormPassword2" style="color:black">Password</label>
+						<input type="password" class="form-control" id="exampleDropdownFormPassword2" placeholder="Password">
+					</div>
+					<div class="text-center margin-right-5 margin-left-5">
+						<button type="submit" class="btn btn-default btn-lg btn-block">Sign in</button>
+					</div>
+		        </form>
+        	</li>
+          </ul>
+        </li>
+        <li><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+	    </ul>
+	  </div>
+	</nav>
+	<div class="container-fluid">
+		<div class="row text-center">
+			<h2>Welcome to</h2>
+        </div>
+        <div class="row text-center">
+			<h1>The Light Saber Shop</h1>
+        </div>
+        <div class="row text-center">
+			<img alt="The_Light_Saber_Shop_logo" src="pictures/thelightsabershoplogo.png">
+        </div>
+        <div class="row text-center">
+        </div>
+        <div class="row text-center" style="margin-top:40px">
+			<h4>Coded and Designed By</h4>
+        </div>
+        
+        <div class="row text-center">
+			<img alt="Sevket_Ozturk_logo" src="pictures/sevket_ozturk_logo.png" height="78px">
+        </div>
+    </div>
+</body>
+</html>

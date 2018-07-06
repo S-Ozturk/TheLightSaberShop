@@ -7,6 +7,7 @@
 <title>The Light Saber Shop</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/formatXML.js"></script>
 <link href="css/bootstrap.min.css" rel="stylesheet">
 <link href="css/custom.css" rel="stylesheet">
 <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
@@ -28,17 +29,60 @@
 		};
 	};
 	
-	//Function to change pages (Actually it generates requested pages)
-	function changeTo(page){
-		clearContainer();
-		document.title = "The Light Saber Shop - " + page;
-		setActive(page);
+	function generatePage(page){
+		var container = document.getElementById("container");
+		switch(page){
+			case "XML List":
+				var myObj, x;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						alert(this.responseText);
+						var div = document.createElement("DIV");
+						div.className = "container-fluid";
+						var myArr = this.responseText;
+						
+						
+					}
+				};
+				xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/xml");
+				xhttp.setRequestHeader("Content-type", "application/xml");
+				xhttp.send();
+				break;
+				
+			case "XML File":
+				var myObj, x;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var element = document.createElement("A");
+						element.setAttribute('href', 'data:application/xml;charset=utf-8,' + encodeURIComponent(this.responseText));
+						element.setAttribute('download', 'Saber.xml');
+						element.style.display = 'none';
+						container.appendChild(element);
+						element.click();
+						container.removeChild(element);
+					}
+				};
+				xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/xml");
+				xhttp.setRequestHeader("Content-type", "application/xml");
+				xhttp.send();
+				  
+				break;				
+		}
 	}
 	
 	//---------------------------------------------//
 	//   R E U S A B L E   C O D E S   S T A R T   //
 	//---------------------------------------------//
 	
+	//Function to change pages (Actually it generates requested pages)
+	function changeTo(page){
+		clearContainer();
+		document.title = "The Light Saber Shop - " + page;
+		setActive(page);
+		generatePage(page);
+	}
 	
 	//Function clear the container in page
 	function clearContainer(){
@@ -59,7 +103,7 @@
 		xhttp.send();
 	}
 	
-	//For getting data as json !!Didnt verified that yet its working!!
+	//For getting data as Xml !!Didnt verified that yet its working!!
 	function getDataXml(api) {
 		var myObj, x;
 		var xhttp = new XMLHttpRequest();
@@ -182,10 +226,15 @@
 	
 	//For setting menu button as active and removes active from other menu buttons
 	function setActive(page){
-		var pageNames = [{name:"Light Sabers",id:"lightSabersMenu"},{name:"XML File List",id:"saberListMenu"} ];  
+		var pageNames = [{name:"Light Sabers",id:"lightSabersMenu"},{name:"XML File",id:"saberListMenu"},{name:"XML List",id:"saberListMenu"} ]; 
+		var pageId="";
 		for(x in pageNames){
+			if(pageNames[x].id == pageId) {
+				continue;
+			}
 			if(pageNames[x].name == page){
 				document.getElementById(pageNames[x].id).className += " active";
+				pageId = pageNames[x].id;
 			} else {
 				if(document.getElementById(pageNames[x].id).className.includes(" active")){
 					document.getElementById(pageNames[x].id).className = document.getElementById(pageNames[x].id).className.replace(" active","");
@@ -197,6 +246,7 @@
 	//---------------------------------------------//
 	//     R E U S A B L E   C O D E S   E N D     //
 	//---------------------------------------------//
+	
 </script>
 </head>
 <body onload="checkMenu()">
@@ -207,7 +257,8 @@
 	      <li id="saberListMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Get List Of Light Sabers<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a onclick='changeTo("XML File List")'>XML File List</a></li>
+            <li><a onclick='changeTo("XML File")'>XML File</a></li>
+            <li><a onclick='changeTo("XML List")'>XML List</a></li>
           </ul>
         </li>
         <li id="jediMasterMenu" class="dropdown">

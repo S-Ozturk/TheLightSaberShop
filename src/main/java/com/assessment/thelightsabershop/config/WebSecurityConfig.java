@@ -48,29 +48,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         users.put("jedi@master.com","{noop}pass,ROLE_JEDIMASTER,enabled"); //adding for default jedimaster account
         return new InMemoryUserDetailsManager(users);
     }
-
-    /*@Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-    	UserDetails padavan =
-             User.withDefaultPasswordEncoder()
-                .username("padavan")
-                .password("password")
-                .roles("USER")
-                .build();
-    	UserDetails jedi =
-                User.withDefaultPasswordEncoder()
-                   .username("jedi@master.com")
-                   .password("pass")
-                   .roles("USER")
-                   .build();
-        UserDetails admin =
-                User.withDefaultPasswordEncoder()
-                   .username("admin")
-                   .password("password")
-                   .roles("ADMIN")
-                   .build();
-        	return new InMemoryUserDetailsManager(padavan, jedi, admin);
-    }*/
     
 }

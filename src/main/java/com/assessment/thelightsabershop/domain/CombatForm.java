@@ -1,32 +1,27 @@
 package com.assessment.thelightsabershop.domain;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @Entity
-public class Saber {
+public class CombatForm {
+
 	@Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     
     private String name;
     
-    private int available;
-    
-    @ManyToOne
-    @JoinColumn(name="CRYSTAL_ID", nullable=false)
-    private Crystal crystal;
-    
-    @ManyToOne
-    @JoinColumn(name="COMBAT_FORM_ID")
-    private CombatForm combatForm;
+    @OneToMany(mappedBy="combatForm")
+    private List<Saber> sabers;
 
     @XmlElement
 	public Long getId() {
@@ -46,22 +41,4 @@ public class Saber {
 		this.name = name;
 	}
 
-	@XmlElement
-	public int getAvailable() {
-		return available;
-	}
-
-	public void setAvailable(int available) {
-		this.available = available;
-	}
-
-	@XmlElement
-	public Crystal getCrystal() {
-		return crystal;
-	}
-
-	public void setCrystal(Crystal crystal) {
-		this.crystal = crystal;
-	}
-    
 }

@@ -1,7 +1,5 @@
 package com.assessment.thelightsabershop.api;
 
-import java.net.URI;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -13,9 +11,7 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.assessment.thelightsabershop.controller.UserService;
 import com.assessment.thelightsabershop.domain.User;
@@ -35,6 +31,17 @@ public class UserEndpoint {
 	public Response getAllUsers(){
 		Iterable <User> users= userService.getAllUsers();
 		return Response.ok(users).build();
+	}
+	
+	//Getting details of single user
+	//Have to use POST method because of the problem of using email as path variable
+	@Path("/single")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUserByEmail(User user){
+		String email = user.getEmail();
+		return Response.ok(userService.getUserByEmail(email)).build();
 	}
 	
 	//add user by posted json data

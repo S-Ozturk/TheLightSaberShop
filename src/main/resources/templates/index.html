@@ -28,18 +28,78 @@
 		};
 	};
 	
+	function generatePage(page){
+		var container = document.getElementById("container");
+		switch(page){
+			case "XML List":
+				var myObj, x;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						alert(this.responseText);
+						var header = document.createElement("H3");
+						header.className="col-sm-12 text-center";
+						container.appendChild(header);
+						header.innerHTML  = "XML List Of Light Sabers";
+						var div = document.createElement("DIV");
+						div.className = "container-fluid";
+						var textarea = document.createElement("TEXTAREA");
+						textarea.className="form-control";
+						// textarea.readOnly  = "true"; - This line can comment out for making text area editable
+						textarea.rows = "30";
+						textarea.style = "resize:none;"
+						textarea.appendChild(document.createTextNode(this.responseText));
+						div.appendChild(textarea);
+						container.appendChild(div);						
+					}
+				};
+				xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/xml");
+				xhttp.setRequestHeader("Content-type", "application/xml");
+				xhttp.send();
+				break;
+				
+			case "XML File":
+				var myObj, x;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var element = document.createElement("A");
+						element.setAttribute('href', 'data:application/xml;charset=utf-8,' + encodeURIComponent(this.responseText));
+						element.setAttribute('download', 'LightSabers.xml');
+						element.style.display = 'none';
+						container.appendChild(element);
+						element.click();
+						container.removeChild(element);
+					}
+				};
+				xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/xml");
+				xhttp.setRequestHeader("Content-type", "application/xml");
+				xhttp.send();
+				  
+				break;				
+		}
+	}
+	
 	//---------------------------------------------//
 	//   R E U S A B L E   C O D E S   S T A R T   //
 	//---------------------------------------------//
 	
 	//Function to change pages (Actually it generates requested pages)
 	function changeTo(page){
-		
+		clearContainer();
+		document.title = "The Light Saber Shop - " + page;
+		setActive(page);
+		generatePage(page);
+	}
+	
+	//Function clear the container in page
+	function clearContainer(){
+		document.getElementById("container").innerHTML="";
 	}
 	
 	//For getting data as json
 	function getDataJson(api) {
-		var myObj, x, txt = "";
+		var myObj, x;
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -51,9 +111,9 @@
 		xhttp.send();
 	}
 	
-	//For getting data as json !!Didnt verified that yet its working!!
+	//For getting data as Xml !!Didnt verified that yet its working!!
 	function getDataXml(api) {
-		var myObj, x, txt = "";
+		var myObj, x;
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
@@ -172,20 +232,41 @@
 		element.parentNode.removeChild(element);
 	}
 	
+	//For setting menu button as active and removes active from other menu buttons
+	function setActive(page){
+		var pageNames = [{name:"Light Sabers",id:"lightSabersMenu"},{name:"XML File",id:"saberListMenu"},{name:"XML List",id:"saberListMenu"} ]; 
+		var pageId="";
+		for(x in pageNames){
+			if(pageNames[x].id == pageId) {
+				continue;
+			}
+			if(pageNames[x].name == page){
+				document.getElementById(pageNames[x].id).className += " active";
+				pageId = pageNames[x].id;
+			} else {
+				if(document.getElementById(pageNames[x].id).className.includes(" active")){
+					document.getElementById(pageNames[x].id).className = document.getElementById(pageNames[x].id).className.replace(" active","");
+				}
+			}
+		}
+	}
+	
 	//---------------------------------------------//
 	//     R E U S A B L E   C O D E S   E N D     //
 	//---------------------------------------------//
+	
 </script>
 </head>
 <body onload="checkMenu()">
 	<nav class="navbar navbar-default ">
 	  <div class="container-fluid">
 	    <ul id="mainMenu" class="nav navbar-nav">
-	      <li id="lightSabersMenu"><a href='changeTo("LightSabers")'>Light Sabers</a></li>
+	      <li id="lightSabersMenu"><a onclick='changeTo("Light Sabers")'>Light Sabers</a></li>
 	      <li id="saberListMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Get List Of Light Sabers<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
+            <li><a onclick='changeTo("XML File")'>XML File</a></li>
+            <li><a onclick='changeTo("XML List")'>XML List</a></li>
           </ul>
         </li>
         <li id="jediMasterMenu" class="dropdown">

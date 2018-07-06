@@ -11,22 +11,31 @@
 <link href="css/custom.css" rel="stylesheet">
 <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
 <script type="text/javascript">	
+
 	//Limiting setting menu just for admin 
 	function checkMenu(){
 		if(![[${#httpServletRequest.isUserInRole("JEDIMASTER")}]]){
 			removeElement("jediMasterMenu");
+			if(![[${#httpServletRequest.isUserInRole("USER")}]]){
+				removeElement("logoutMenu");
+				removeElement("saberListMenu");
+			};
 		};
-		if(![[${#httpServletRequest.isUserInRole("JEDIMASTER")}]] || ![[${#httpServletRequest.isUserInRole("USER")}]]){
-			removeElement("logoutMenu");
-			removeElement("saberListMenu");
+		if([[${#httpServletRequest.isUserInRole("JEDIMASTER")}]] || [[${#httpServletRequest.isUserInRole("USER")}]]){
+			removeElement("signUpMenu");
+			removeElement("loginMenu");
+			getUser("Jedisabershop/user/single",'{"email":"'+document.getElementById("emailLabel").innerHTML+'"}');
 		};
 	};
-	
 	
 	//---------------------------------------------//
 	//   R E U S A B L E   C O D E S   S T A R T   //
 	//---------------------------------------------//
 	
+	//Function to change pages (Actually it generates requested pages)
+	function changeTo(page){
+		
+	}
 	
 	//For getting data as json
 	function getDataJson(api) {
@@ -55,6 +64,69 @@
 		xhttp.setRequestHeader("Content-type", "application/xml");
 		xhttp.send();
 	}
+	
+	//For getting user data
+	function getUser(api,data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var container = document.getElementById("containerUser");
+				removeElement("emailLabel");
+				container.innerHTML = "";
+				myObj = JSON.parse(this.responseText);
+				var roleLabel = document.createElement("LABEL");
+				roleLabel.className = "margin-right-5";
+				roleLabel.innerHTML = myObj.role;
+				container.appendChild(roleLabel);
+				var nameLabel = document.createElement("LABEL");
+				nameLabel.innerHTML = myObj.name;
+				nameLabel.className = "margin-right-5";
+				container.appendChild(nameLabel);
+				if(myObj.dissolvedInForce){
+					var seperator = document.createElement("LABEL");
+					seperator.innerHTML = "  -  ";
+					seperator.className = "margin-right-5";
+					container.appendChild(seperator);
+					var dissolvedLabel = document.createElement("LABEL");
+					dissolvedLabel.innerHTML = "Dissolved in force";
+					container.appendChild(dissolvedLabel);
+					var div = document.createElement("DIV");
+					div.className="row";
+					container.appendChild(div);
+					var restLabel = document.createElement("LABEL");
+					restLabel.innerHTML = "REST IN FORCE...";
+					div.appendChild(restLabel);
+					removeElement("lightSabersMenu");
+					removeElement("saberListMenu");
+				}else{
+					var seperatorAge = document.createElement("LABEL");
+					seperatorAge.innerHTML = "  -  Age: ";
+					seperatorAge.className = "margin-right-5";
+					container.appendChild(seperatorAge);
+					var ageLabel = document.createElement("LABEL");
+					ageLabel.innerHTML = myObj.age;
+					ageLabel.className = "margin-right-5";
+					container.appendChild(ageLabel);
+					var seperatorForce = document.createElement("LABEL");
+					var forceLabel = document.createElement("LABEL");
+					if(myObj.force < 0){
+						seperatorForce.innerHTML = "  -  Force is so strong with you! it's ";
+						forceLabel.innerHTML = "Unlimited";
+					} else {
+						seperatorForce.innerHTML = "  -  Force: ";
+						forceLabel.innerHTML = myObj.force;
+					}
+					seperatorForce.className = "margin-right-5";
+					container.appendChild(seperatorForce);
+					forceLabel.className = "margin-right-5";
+					container.appendChild(forceLabel);
+				}
+			}
+		};
+		xhttp.open("POST", "http://localhost:8082/" + api, true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(data);
+	}
 
 	//For posting data
 	function postData(api,data) {
@@ -66,19 +138,6 @@
 		};
 		xhttp.open("POST", "http://localhost:8082/api/" + api, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
-		xhttp.send(data);
-	}
-	
-	//For posting data
-	function postImage(data) {
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 202) {
-				
-			}
-		};
-		xhttp.open("POST", "http://localhost:8082/upload" , true);
-		xhttp.setRequestHeader("Content-type", "multipart/form-data");
 		xhttp.send(data);
 	}
 	
@@ -122,7 +181,7 @@
 	<nav class="navbar navbar-default ">
 	  <div class="container-fluid">
 	    <ul id="mainMenu" class="nav navbar-nav">
-	      <li><a href="#">Light Sabers</a></li>
+	      <li id="lightSabersMenu"><a href='changeTo("LightSabers")'>Light Sabers</a></li>
 	      <li id="saberListMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Get List Of Light Sabers<span class="caret"></span></a>
           <ul class="dropdown-menu">
@@ -167,8 +226,11 @@
         <li id="logoutMenu"><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 	    </ul>
 	  </div>
+	  <div id="containerUser" class="container-fluid text-center navbar-inverse">
+		<label id="emailLabel" th:inline="text">[[${#httpServletRequest.remoteUser}]]</label>
+		</div>
 	</nav>
-	<div class="container-fluid">
+	<div id="container" class="container-fluid">
 		<div class="row text-center">
 			<h2>Welcome to</h2>
         </div>

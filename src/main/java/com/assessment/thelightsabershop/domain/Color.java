@@ -29,7 +29,6 @@ public class Color {
     @OneToMany(mappedBy="color")
     private List<Crystal> crystals;
 
-    //@XmlElement - not needed in assessment
 	public Long getId() {
 		return id;
 	}
@@ -38,7 +37,7 @@ public class Color {
 		this.id = id;
 	}
 
-	//@XmlElement - not needed in assessment
+	@XmlElement
 	public String getPlanet() {
 		return planet;
 	}
@@ -66,7 +65,7 @@ public class Color {
 		this.powerUsageMultiplier = powerUsageMultiplierCalculated;
 	}
 
-	//@XmlElement - not needed in assessment
+	@XmlElement
 	public int getStockPrice() {
 		return stockPrice;
 	}

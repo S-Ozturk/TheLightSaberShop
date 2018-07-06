@@ -49,7 +49,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return new InMemoryUserDetailsManager(users);
     }
 
-    @Bean
+    /*@Bean
     @Override
     public UserDetailsService userDetailsService() {
     	UserDetails padavan =
@@ -71,6 +71,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                    .roles("ADMIN")
                    .build();
         	return new InMemoryUserDetailsManager(padavan, jedi, admin);
-    }
+    }*/
     
 }

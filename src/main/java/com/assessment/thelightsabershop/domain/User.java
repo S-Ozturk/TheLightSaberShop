@@ -1,11 +1,16 @@
 package com.assessment.thelightsabershop.domain;
 
 import java.util.Calendar;
+import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class User {
@@ -16,6 +21,13 @@ public class User {
     private int age, registrationYear;
     
     private String name, email, password;
+    
+    @ManyToMany(fetch=FetchType.EAGER)
+    @JoinTable(
+        name="USER_COMBAT_FORM",
+        joinColumns=@JoinColumn(name="USER_ID", referencedColumnName="ID"),
+        inverseJoinColumns=@JoinColumn(name="COMBAT_FORM_ID", referencedColumnName="ID"))
+    private List<CombatForm> combatForms;
 
 	public Long getId() {
 		return id;
@@ -95,4 +107,13 @@ public class User {
 			return "Padavan";
 		}
 	}
+
+	public List<CombatForm> getCombatForms() {
+		return combatForms;
+	}
+
+	public void setCombatForms(List<CombatForm> combatForms) {
+		this.combatForms = combatForms;
+	}
+	
 }

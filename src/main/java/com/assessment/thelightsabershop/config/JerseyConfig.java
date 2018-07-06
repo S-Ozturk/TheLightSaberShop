@@ -5,6 +5,7 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 
+import com.assessment.thelightsabershop.api.CombatFormEndpoint;
 import com.assessment.thelightsabershop.api.CrystalEndpoint;
 import com.assessment.thelightsabershop.api.SaberEndpoint;
 import com.assessment.thelightsabershop.api.UserEndpoint;
@@ -13,8 +14,9 @@ import com.assessment.thelightsabershop.api.UserEndpoint;
 @ApplicationPath("/Jedisabershop")
 public class JerseyConfig extends ResourceConfig {
 	public JerseyConfig(){
-		register(UserEndpoint.class);
 		register(CrystalEndpoint.class);
+		register(CombatFormEndpoint.class);
 		register(SaberEndpoint.class);
+		register(UserEndpoint.class);
 	}
 }

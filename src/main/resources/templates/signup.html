@@ -11,14 +11,97 @@
 <link href="css/custom.css" rel="stylesheet">
 <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
 <script type="text/javascript">	
+
+	//These functions for automated drag and drop support for combat forms
+	function allowDrop(ev) {
+	    ev.preventDefault();
+	}
+	
+	function drag(ev) {
+	    ev.dataTransfer.setData("text/html", ev.target.id);
+	}
+	
+	function dropUnselected(ev) {
+	    ev.preventDefault();
+	    var data = ev.dataTransfer.getData("text/html");
+	    document.getElementById(data.substring(0,data.indexOf("_"))).checked = false;
+	    document.getElementById("divUnselectedCombatForm").appendChild(document.getElementById(data));
+	}
+	function dropSelected(ev) {
+	    ev.preventDefault();
+	    var data = ev.dataTransfer.getData("text/html");
+	    document.getElementById(data.substring(0,data.indexOf("_"))).checked = true;
+	    document.getElementById("divSelectedCombatForm").appendChild(document.getElementById(data));
+	}
+	
+	//Manually changing selection for combat forms
+	function changeCombatFormSelection(id){
+		var element = document.getElementById(id+"_div");
+		var checkBox = document.getElementById(id);
+		if (checkBox.checked == true){
+			document.getElementById("divSelectedCombatForm").appendChild(element);
+		} else {
+			document.getElementById("divUnselectedCombatForm").appendChild(element);
+		}
+	};
+
+	//For getting Combat Forms
+	function getCombatForms() {
+		var myObj, x, txt = "";
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = JSON.parse(this.responseText);
+				var divUnselectedCombatForm = document.getElementById("divUnselectedCombatForm");
+				for(x in myObj){
+					var divCombatForm = document.createElement("DIV"); 
+					divCombatForm.className="row";
+					divCombatForm.style="margin-top:5px; margin-bottom:5px";
+					divCombatForm.draggable="true";
+					divCombatForm.ondragstart=function(event){drag(event)};
+					divCombatForm.id = myObj[x].id + "_div"
+					var checkbox = document.createElement("INPUT");
+					checkbox.className = "col-sm-offset-1 col-sm-1";
+					checkbox.type = "checkbox";
+					checkbox.id = myObj[x].id;
+					checkbox.onclick = function(){changeCombatFormSelection(this.id)};
+					divCombatForm.appendChild(checkbox);
+					var label = document.createElement("LABEL");
+					var labelText = document.createTextNode(myObj[x].name);
+					label.className = "col-sm-11";
+					label.appendChild(labelText);
+					divCombatForm.appendChild(label);
+					divUnselectedCombatForm.appendChild(divCombatForm);
+				}
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/Jedisabershop/combatform");
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
 	//For posting user data as Json
 	function postData() {
 		var name = document.getElementById("inputName").value ;
 		var age = document.getElementById("inputAge").value;
 		var email = document.getElementById("inputEmail").value;
 		var password = document.getElementById("inputPassword").value;
+		var combat = "";
 		if(name != "" && age != "" && email != "" && password != ""){
-			var data = '{"name":"' + name + '","age":' + age + ',"email":"' + email + '","password":"'+ password + '"}';
+			var checkboxs = document.getElementsByTagName("input");
+			for(var i = 0; i < checkboxs.length; i++) {
+			    if(checkboxs[i].type == "checkbox") {
+			    	if(checkboxs[i].checked == true) {
+			    		if(combat.length < 1) {
+			    			combat = combat + '{"id":'+ checkboxs[i].id +'}';
+			    		}else{
+			    			combat = combat + ',{"id":'+ checkboxs[i].id +'}';
+			    		}
+			    	};
+			    }
+			}
+			var data = '{"name":"' + name + '","age":' + age + ',"email":"' + email + '","password":"'+ password + '", "combatForms":[' + combat + ']}';
+			alert(data);
 			var xhttp = new XMLHttpRequest();
 			xhttp.onreadystatechange = function() {
 				if (this.readyState == 4 && this.status == 202) {
@@ -53,10 +136,11 @@
 			xhttp.setRequestHeader("Content-type", "application/json");
 			xhttp.send(data);
 		}
+
 	}
 </script>
 </head>
-<body>
+<body onload='getCombatForms()'>
 	<nav class="navbar navbar-default ">
 	  <div class="container-fluid">
 	    <ul id="mainMenu" class="nav navbar-nav">
@@ -92,6 +176,22 @@
 			<label for="inputPassword" class="col-sm-3 control-label">Password</label>
 			<div class="col-sm-8">
 				<input name="password" type="password" class="form-control" id="inputPassword" placeholder="Password">
+			</div>
+		</div>
+		<div class="form-group">
+			<div class="col-sm-offset-3 col-sm-8">
+				<div class="col-sm-5">
+					<div class="panel panel-default">
+						<div class="panel-heading text-center">Known Combat Form(s)</div>
+						<div id="divSelectedCombatForm" class="panel-body" ondrop="dropSelected(event)" ondragover="allowDrop(event)"></div>
+					</div>
+				</div>
+				<div class="col-sm-offset-2 col-sm-5">
+					<div class="panel panel-default">
+						<div class="panel-heading text-center">Combat Forms</div>
+						<div id="divUnselectedCombatForm" class="panel-body" ondrop="dropUnselected(event)" ondragover="allowDrop(event)"></div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="form-group">

@@ -5,6 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import com.assessment.thelightsabershop.controller.CombatFormService;
 import com.assessment.thelightsabershop.controller.UserService;
 
 @SpringBootApplication
@@ -15,9 +16,11 @@ public class TheLightSaberShopApplication {
 	}
 	
 	@Bean
-    CommandLineRunner init(UserService userService) {
+    CommandLineRunner init(UserService userService, CombatFormService combatFormService) {
         return (args) -> {
             userService.initUsers();
+            combatFormService.initCombatForms();
         };
     }
+	
 }

@@ -24,7 +24,11 @@
 		if([[${#httpServletRequest.isUserInRole("JEDIMASTER")}]] || [[${#httpServletRequest.isUserInRole("USER")}]]){
 			removeElement("signUpMenu");
 			removeElement("loginMenu");
-			getUser("Jedisabershop/user/single",'{"email":"'+document.getElementById("emailLabel").innerHTML+'"}');
+			if([[${#httpServletRequest.isUserInRole("USER")}]]){
+				getUser("Jedisabershop/user/single",'{"email":"'+document.getElementById("emailLabel").innerHTML+'"}');
+			}else{
+				document.getElementById("containerUser").innerHTML = "Welcome Master Jedi... That's honor to see you here..."
+			}
 		};
 	};
 	
@@ -36,7 +40,6 @@
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
 					if (this.readyState == 4 && this.status == 200) {
-						alert(this.responseText);
 						var header = document.createElement("H3");
 						header.className="col-sm-12 text-center";
 						container.appendChild(header);
@@ -75,61 +78,169 @@
 				xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/xml");
 				xhttp.setRequestHeader("Content-type", "application/xml");
 				xhttp.send();
-				  
-				break;				
+				break;	
+				
+			case"Add New Light Saber":
+				var header = document.createElement("H3");
+				header.className="col-sm-12 text-center";
+				container.appendChild(header);
+				header.innerHTML  = "Add New Light Saber Form";
+				var divFormHorizontal = document.createElement("DIV");
+				divFormHorizontal.className = "form-horizontal";
+				function createFormInput(labelText, id, inputType){
+					var divFormGroup = document.createElement("DIV");
+					divFormGroup.className = "form-group";
+					var label = document.createElement("LABEL");
+					label.className = "col-sm-3 control-label";
+					label.appendChild(document.createTextNode(labelText));
+					divFormGroup.appendChild(label);
+					var divInput = document.createElement("DIV");
+					divInput.className = "col-sm-8";
+					switch(id){
+						default:
+							var input = document.createElement("INPUT");
+							input.className = "form-control";
+							input.id = id + "_input";
+							input.type = inputType;
+							input.placeholder = labelText;
+							divInput.appendChild(input);
+							break;
+							
+						case "crystalSearch":
+							var divInputGroup = document.createElement("DIV");
+							divInputGroup.className = "input-group";
+							var input = document.createElement("INPUT");
+							input.className = "form-control";
+							input.id = id;
+							input.placeholder = "Search For Crystal";
+							input.onkeyup = function(){filterCrystalListTable()};
+							divInputGroup.appendChild(input);
+							var divAddon = document.createElement("DIV");
+							divAddon.className = "input-group-addon";
+							var searchGlyphicon =  document.createElement("SPAN");
+							searchGlyphicon.className = "glyphicon glyphicon-search";
+							divAddon.appendChild(searchGlyphicon);
+							divInputGroup.appendChild(divAddon);
+							divInput.appendChild(divInputGroup);
+							break;
+						
+						case "crystalTable":
+							
+							break;
+					}
+					divFormGroup.appendChild(divInput);
+					divFormHorizontal.appendChild(divFormGroup);
+				}
+				function createCrystalTable(){
+					var divFormGroup = document.createElement("DIV");
+					divFormGroup.className = "form-group";
+					var label = document.createElement("LABEL");
+					label.className = "col-sm-3 control-label";
+					label.appendChild(document.createTextNode("Crystals List"));
+					divFormGroup.appendChild(label);
+					var divInput = document.createElement("DIV");
+					divInput.className = "col-sm-8 panel panel-default";
+					divInput.style = "overflow-y:auto; height:150px;"
+					var crystalTable =  document.createElement("TABLE");
+					crystalTable.id = "crystalTable";
+					crystalTable.className = "table table-striped table-condensed";
+					var tableBody =  document.createElement("TBODY");
+					crystalTable.appendChild(tableBody);
+					var rowHeader =  document.createElement("TR");
+					rowHeader.className = "header";
+					var headerTexts = ["#","Name","Color","Power Usage","d"];
+					for(x in headerTexts){
+						var header =  document.createElement("TH");
+						header.innerHTML = headerTexts[x];
+						rowHeader.appendChild(header);
+					}
+					tableBody.appendChild(rowHeader);
+					var myObj, x;
+					var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function() {
+						if (this.readyState == 4 && this.status == 200) {
+							myObj = JSON.parse(this.responseText);
+							for(x in myObj){
+								var row =  document.createElement("TR");
+								row.id = myObj[x].id + "_row";
+								var columnRadio = document.createElement("TD");
+								var radio = document.createElement("INPUT");
+								radio.type = "radio";
+								radio.name = "crystalRadio";
+								radio.value = myObj[x].id;
+								radio.id = myObj[x].id + "_radio";
+								columnRadio.appendChild(radio);
+								row.appendChild(columnRadio);
+								var columnName =  document.createElement("TD");
+								columnName.innerHTML = myObj[x].name;
+								row.appendChild(columnName);
+								var columnColor =  document.createElement("TD");
+								columnColor.innerHTML = myObj[x].color;
+								row.appendChild(columnColor);
+								var columnPowerUsage =  document.createElement("TD");
+								columnPowerUsage.innerHTML = myObj[x].powerUsageMultiplier;
+								row.appendChild(columnPowerUsage);
+								var columnStockPrice =  document.createElement("TD");
+								columnStockPrice.innerHTML = myObj[x].stockPrice;
+								row.appendChild(columnStockPrice);
+								tableBody.appendChild(row);
+							}
+						}
+					}
+					xhttp.open("GET", "http://localhost:8082/Jedisabershop/crystal");
+					xhttp.setRequestHeader("Content-type", "application/json");
+					xhttp.send();
+					
+					
+					
+					divInput.appendChild(crystalTable);
+					divFormGroup.appendChild(divInput);
+					divFormHorizontal.appendChild(divFormGroup);
+				}
+				createFormInput("Light Saber's Name","name","text");
+				createFormInput("Planet","planet","text");
+				createFormInput("Avability","avability","number");
+				createFormInput("Search For Crystal","crystalSearch","text");
+				createCrystalTable();
+				container.appendChild(divFormHorizontal);
+				break;
 		}
 	}
 	
-	//---------------------------------------------//
-	//   R E U S A B L E   C O D E S   S T A R T   //
-	//---------------------------------------------//
-	
-	//Function to change pages (Actually it generates requested pages)
-	function changeTo(page){
-		clearContainer();
-		document.title = "The Light Saber Shop - " + page;
-		setActive(page);
-		generatePage(page);
-	}
-	
-	//Function clear the container in page
-	function clearContainer(){
-		document.getElementById("container").innerHTML="";
-	}
-	
-	//For getting data as json
-	function getDataJson(api) {
-		var myObj, x;
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				myObj = JSON.parse(this.responseText);
+	// This function is for filtering the crytals table as the input in the searchbox
+	function filterCrystalListTable() {
+		var input, filter, table, tr, td, i, x;
+		input = document.getElementById("crystalSearch");
+		filter = input.value.toUpperCase();
+		table = document.getElementById("crystalTable");
+		tr = table.getElementsByTagName("tr");
+		
+			for (i = 1; i < tr.length; i++) { //started from 1 because i don't want remove header
+			var controller = 0;
+			td = tr[i].getElementsByTagName("td");
+			for(j = 1; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
+				alert(td.length + " - " + j);
+				if (td[j]) {
+					if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+						controller += 1 ;
+						break;
+					}
+				}
 			}
-		};
-		xhttp.open("GET", "http://localhost:8082/api/" + api);
-		xhttp.setRequestHeader("Content-type", "application/json");
-		xhttp.send();
-	}
-	
-	//For getting data as Xml !!Didnt verified that yet its working!!
-	function getDataXml(api) {
-		var myObj, x;
-		var xhttp = new XMLHttpRequest();
-		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 200) {
-				myObj = XML.parse(this.responseText);
+			if (controller > 0) {
+				tr[i].style.display = "";
+			} else {
+				tr[i].style.display = "none";
 			}
-		};
-		xhttp.open("GET", "http://localhost:8082/api/" + api);
-		xhttp.setRequestHeader("Content-type", "application/xml");
-		xhttp.send();
+		}
 	}
 	
-	//For getting user data
+	//For getting user data (its working with post methode)
 	function getUser(api,data) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
+				alert(this.responseText);
 				var container = document.getElementById("containerUser");
 				removeElement("emailLabel");
 				container.innerHTML = "";
@@ -182,10 +293,55 @@
 					container.appendChild(forceLabel);
 				}
 			}
-		};
+		}
 		xhttp.open("POST", "http://localhost:8082/" + api, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send(data);
+	}
+	
+	//---------------------------------------------//
+	//   R E U S A B L E   C O D E S   S T A R T   //
+	//---------------------------------------------//
+	
+	//Function to change pages (Actually it generates requested pages)
+	function changeTo(page){
+		clearContainer();
+		document.title = "The Light Saber Shop - " + page;
+		setActive(page);
+		generatePage(page);
+	}
+	
+	//Function clear the container in page
+	function clearContainer(){
+		document.getElementById("container").innerHTML="";
+	}
+	
+	//For getting data as json
+	function getDataJson(api) {
+		var myObj, x;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = JSON.parse(this.responseText);
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/api/" + api);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
+	//For getting data as Xml !!Didnt verified that yet its working!!
+	function getDataXml(api) {
+		var myObj, x;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = XML.parse(this.responseText);
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/api/" + api);
+		xhttp.setRequestHeader("Content-type", "application/xml");
+		xhttp.send();
 	}
 
 	//For posting data
@@ -234,7 +390,9 @@
 	
 	//For setting menu button as active and removes active from other menu buttons
 	function setActive(page){
-		var pageNames = [{name:"Light Sabers",id:"lightSabersMenu"},{name:"XML File",id:"saberListMenu"},{name:"XML List",id:"saberListMenu"} ]; 
+		var pageNames = [{name:"Light Sabers",id:"lightSabersMenu"},{name:"XML File",id:"saberListMenu"},{name:"XML List",id:"saberListMenu"},
+			{name:"Add New Light Saber",id:"jediMasterMenu"},{name:"Add Light Saber From File",id:"jediMasterMenu"},
+			{name:"Add Light Saber With JSON",id:"jediMasterMenu"} ]; 
 		var pageId="";
 		for(x in pageNames){
 			if(pageNames[x].id == pageId) {
@@ -272,8 +430,11 @@
         <li id="jediMasterMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jedi Master Menu<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Add a new light saber</a></li>
-            <li><a href="#">Add light saber(s) from file</a></li>
+            <li><a onclick='changeTo("Add New Light Saber")'>Add New Light Saber</a></li>
+            <li><a onclick='changeTo("Add Light Sabers From File")'>Add Light Sabers From File</a></li>
+            <li><a onclick='changeTo("Add Light Sabers With JSON")'>Add Light Sabers With JSON</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a onclick='changeTo("Stock List")'>Stock List</a></li>
           </ul>
         </li>
 	    </ul>

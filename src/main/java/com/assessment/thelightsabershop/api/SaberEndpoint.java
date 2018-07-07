@@ -83,6 +83,7 @@ public class SaberEndpoint {
 		return Response.ok(new GenericEntity<Iterable<Saber>>(saberService.getAllSabers()) {}).build();
 	}*/
 	
+	@Path("/xml")
 	@POST
 	@Consumes(MediaType.APPLICATION_XML)
 	public @ResponseStatus Response addSaberXML(List<Saber> sabers) {
@@ -115,7 +116,6 @@ public class SaberEndpoint {
 	}
 	
 	//Single Saber adding
-	@Path("/add")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)

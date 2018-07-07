@@ -496,9 +496,11 @@
 				    }
 				    var checkboxes = document.getElementById("divSelectedCombatForm").getElementsByTagName("INPUT");
 				    var count = checkboxes.length;
-				    for (var i = 0; i <= count;) {
+				    for (var i = 0; i < count;) {
+				    	alert( i + " - " + count + " - " + checkboxes[i].id);
 				    	if(checkboxes[i].disabled != true) {
 				    		checkboxes[i].click();
+				    		count -= 1;
 			    		}else{
 				    		i++;
 				    	}

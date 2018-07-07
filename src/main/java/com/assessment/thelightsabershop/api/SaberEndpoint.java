@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -41,12 +42,28 @@ public class SaberEndpoint {
 		return Response.ok(sabers).build();
 	}
 	
+	// For getting single the Saber As JSON Data
+	@Path("/{saberId}/single")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getSingleSaber(@PathParam("saberId") long id){
+		if(saberService.checkSaberById(id)) {
+			Saber saber = saberService.getSaberById(id);
+			return Response.ok(saber).build();
+		} else {
+			return Response.status(204).build();
+		}
+	}
+	
 	//Single Saber adding
 	@Path("/json")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response addSaber(Saber saber){
+		if(saber.getAvailable() < 0) {
+			saber.setAvailable(0);
+		}
 		saberService.addSaber(saber);
 		return Response.status(205).build();
 		//return Response.accepted(saber.getName() + " successfully added").build();	

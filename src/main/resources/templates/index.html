@@ -113,6 +113,7 @@
 							input.className = "form-control";
 							input.id = id;
 							input.placeholder = "Search For Crystal";
+							input.onkeyup = function(){filterCrystalListTable()};
 							divInputGroup.appendChild(input);
 							var divAddon = document.createElement("DIV");
 							divAddon.className = "input-group-addon";
@@ -141,15 +142,15 @@
 					divInput.className = "col-sm-8 panel panel-default";
 					divInput.style = "overflow-y:auto; height:150px;"
 					var crystalTable =  document.createElement("TABLE");
+					crystalTable.id = "crystalTable";
 					crystalTable.className = "table table-striped table-condensed";
 					var tableBody =  document.createElement("TBODY");
 					crystalTable.appendChild(tableBody);
 					var rowHeader =  document.createElement("TR");
-					rowHeader.className = "header text-center";
+					rowHeader.className = "header";
 					var headerTexts = ["#","Name","Color","Power Usage","d"];
 					for(x in headerTexts){
 						var header =  document.createElement("TH");
-						header.className = "text-center";
 						header.innerHTML = headerTexts[x];
 						rowHeader.appendChild(header);
 					}
@@ -185,7 +186,7 @@
 								tableBody.appendChild(row);
 							}
 						}
-					};
+					}
 					xhttp.open("GET", "http://localhost:8082/Jedisabershop/crystal");
 					xhttp.setRequestHeader("Content-type", "application/json");
 					xhttp.send();
@@ -203,6 +204,34 @@
 				createCrystalTable();
 				container.appendChild(divFormHorizontal);
 				break;
+		}
+	}
+	
+	// This function is for filtering the crytals table as the input in the searchbox
+	function filterCrystalListTable() {
+		var input, filter, table, tr, td, i, x;
+		input = document.getElementById("crystalSearch");
+		filter = input.value.toUpperCase();
+		table = document.getElementById("crystalTable");
+		tr = table.getElementsByTagName("tr");
+		
+			for (i = 1; i < tr.length; i++) { //started from 1 because i don't want remove header
+			var controller = 0;
+			td = tr[i].getElementsByTagName("td");
+			for(j = 1; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
+				alert(td.length + " - " + j);
+				if (td[j]) {
+					if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+						controller += 1 ;
+						break;
+					}
+				}
+			}
+			if (controller > 0) {
+				tr[i].style.display = "";
+			} else {
+				tr[i].style.display = "none";
+			}
 		}
 	}
 	
@@ -264,7 +293,7 @@
 					container.appendChild(forceLabel);
 				}
 			}
-		};
+		}
 		xhttp.open("POST", "http://localhost:8082/" + api, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send(data);

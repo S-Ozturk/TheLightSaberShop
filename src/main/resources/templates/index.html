@@ -103,6 +103,9 @@
 							input.id = id + "_input";
 							input.type = inputType;
 							input.placeholder = labelText;
+							if(inputType == "number"){
+								input.min = "0";
+							}
 							divInput.appendChild(input);
 							break;
 							
@@ -123,14 +126,11 @@
 							divInputGroup.appendChild(divAddon);
 							divInput.appendChild(divInputGroup);
 							break;
-						
-						case "crystalTable":
-							
-							break;
 					}
 					divFormGroup.appendChild(divInput);
 					divFormHorizontal.appendChild(divFormGroup);
 				}
+				
 				function createCrystalTable(){
 					var divFormGroup = document.createElement("DIV");
 					divFormGroup.className = "form-group";
@@ -148,7 +148,7 @@
 					crystalTable.appendChild(tableBody);
 					var rowHeader =  document.createElement("TR");
 					rowHeader.className = "header";
-					var headerTexts = ["#","Name","Color","Power Usage","d"];
+					var headerTexts = ["#","Name","Color","Power Usage","Price"];
 					for(x in headerTexts){
 						var header =  document.createElement("TH");
 						header.innerHTML = headerTexts[x];
@@ -190,18 +190,117 @@
 					xhttp.open("GET", "http://localhost:8082/Jedisabershop/crystal");
 					xhttp.setRequestHeader("Content-type", "application/json");
 					xhttp.send();
-					
-					
-					
 					divInput.appendChild(crystalTable);
 					divFormGroup.appendChild(divInput);
 					divFormHorizontal.appendChild(divFormGroup);
 				}
+				
+				//Supported Combat Forms Selection function for adding saber mane
+				function createCombatForm(){
+					
+					//supported combat forms panel
+					var divFormGroup = document.createElement("DIV");
+					divFormGroup.className = "form-group";
+					var divCombatForms = document.createElement("DIV");
+					divCombatForms.className = "col-sm-offset-3 col-sm-8";
+					divFormGroup.appendChild(divCombatForms);
+					var divCol = document.createElement("DIV");
+					divCol.className = "col-sm-5";
+					divCombatForms.appendChild(divCol);
+					var divPanel = document.createElement("DIV");
+					divPanel.className = "panel panel-default";
+					divCol.appendChild(divPanel);
+					var divHeader = document.createElement("DIV");
+					divHeader.className = "panel-heading text-center";
+					divHeader.appendChild(document.createTextNode("Supported Combat Form(s)"));
+					divPanel.appendChild(divHeader);
+					var divSelectedCombatForm = document.createElement("DIV");
+					divSelectedCombatForm.className = "panel-body";
+					divSelectedCombatForm.id = "divSelectedCombatForm";
+					divSelectedCombatForm.ondrop = function(event){dropSelected(event)};
+					divSelectedCombatForm.ondragover = function(event){allowDrop(event)};
+					divPanel.appendChild(divSelectedCombatForm);
+					
+					// combat forms panel
+					var divCol = document.createElement("DIV");
+					divCol.className = "col-sm-offset-2 col-sm-5";
+					divCombatForms.appendChild(divCol);
+					var divPanel = document.createElement("DIV");
+					divPanel.className = "panel panel-default";
+					divCol.appendChild(divPanel);
+					var divHeader = document.createElement("DIV");
+					divHeader.className = "panel-heading text-center";
+					divHeader.appendChild(document.createTextNode("Combat Form(s))"));
+					divPanel.appendChild(divHeader);
+					var divUnselectedCombatForm = document.createElement("DIV");
+					divUnselectedCombatForm.className = "panel-body";
+					divUnselectedCombatForm.id = "divUnselectedCombatForm";
+					divUnselectedCombatForm.ondrop = function(event){dropUnselected(event)};
+					divUnselectedCombatForm.ondragover = function(event){allowDrop(event)};
+					divPanel.appendChild(divUnselectedCombatForm);
+					
+					//getting combat forms into panels
+					var myObj, x, txt = "";
+					var xhttp = new XMLHttpRequest();
+					xhttp.onreadystatechange = function() {
+						if (this.readyState == 4 && this.status == 200) {
+							myObj = JSON.parse(this.responseText);
+							for(x in myObj){
+								var divCombatForm = document.createElement("DIV"); 
+								divCombatForm.className="row";
+								divCombatForm.style="margin-top:5px; margin-bottom:5px";
+								divCombatForm.id = myObj[x].id + "_div"
+								var checkbox = document.createElement("INPUT");
+								checkbox.className = "col-sm-offset-1 col-sm-1";
+								checkbox.type = "checkbox";
+								checkbox.id = myObj[x].id;
+								checkbox.onclick = function(){changeCombatFormSelection(this.id)};
+								divCombatForm.appendChild(checkbox);
+								var label = document.createElement("LABEL");
+								var labelText = document.createTextNode(myObj[x].name);
+								label.className = "col-sm-11";
+								label.appendChild(labelText);
+								divCombatForm.appendChild(label);
+								if(myObj[x].name != "Shii-Cho"){
+									divCombatForm.draggable="true";
+									divCombatForm.ondragstart=function(event){drag(event)};
+									divUnselectedCombatForm.appendChild(divCombatForm);
+								} else {
+									checkbox.checked = true;
+									checkbox.disabled = true;
+									divSelectedCombatForm.appendChild(divCombatForm);
+								}
+							}
+						}
+					};
+					xhttp.open("GET", "http://localhost:8082/Jedisabershop/combatform");
+					xhttp.setRequestHeader("Content-type", "application/json");
+					xhttp.send();
+					divFormHorizontal.appendChild(divFormGroup);
+					
+				}
+				
+				function createSaveButton(){
+					var divFormGroup = document.createElement("DIV");
+					divFormGroup.className = "form-group";
+					var divSaveButton = document.createElement("DIV");
+					divSaveButton.className = "col-sm-offset-3 col-sm-8";
+					var saveButton = document.createElement("BUTTON");
+					saveButton.className = "btn btn-default btn-lg btn-block";
+					saveButton.onclick = saveNewLightSaber;
+					saveButton.appendChild(document.createTextNode("Save Light Saber"));
+					divSaveButton.appendChild(saveButton);
+					divFormGroup.appendChild(divSaveButton);
+					divFormHorizontal.appendChild(divFormGroup);
+				}
+				
 				createFormInput("Light Saber's Name","name","text");
 				createFormInput("Planet","planet","text");
 				createFormInput("Avability","avability","number");
 				createFormInput("Search For Crystal","crystalSearch","text");
 				createCrystalTable();
+				createCombatForm();
+				createSaveButton();
 				container.appendChild(divFormHorizontal);
 				break;
 		}
@@ -219,7 +318,6 @@
 			var controller = 0;
 			td = tr[i].getElementsByTagName("td");
 			for(j = 1; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
-				alert(td.length + " - " + j);
 				if (td[j]) {
 					if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
 						controller += 1 ;
@@ -299,6 +397,41 @@
 		xhttp.send(data);
 	}
 	
+	function saveNewLightSaber(){
+		var name, planet, avability, crystal, combatForms = "";
+		name = document.getElementById("name_input").value;
+		planet = document.getElementById("planet_input").value;
+		avability = document.getElementById("avability_input").value;
+		var radios = document.getElementsByName("crystalRadio");
+	    for (var i = 0; i < radios.length; i++)
+	    {
+	        {
+	        	crystal = radios[i].value;
+	        	break;
+	        }
+	    }
+	    
+	    var divSelectedCombatForm = document.getElementById("divSelectedCombatForm")
+	    var checkboxes = document.getElementById("divSelectedCombatForm").getElementsByTagName("INPUT");
+	    for (var i = 0; i < checkboxes.length; i++)
+	    {
+	    	if(combatForms.length < 1) {
+	    		combatForms = combatForms + '{"id":'+ checkboxes[i].id +'}';
+    		}else{
+    			combatForms = combatForms + ',{"id":'+ checkboxes[i].id +'}';
+    		}
+	    }
+	    
+	    alert(name + " - " + planet + " - " + avability + " - " + crystal + " - " + combatForms);
+		if(name == ""){
+			alert("Force doesn't like this name");
+		} else if (planet == ""){
+			
+		}
+		
+		postData205("saber/json","{}");
+	}
+	
 	//---------------------------------------------//
 	//   R E U S A B L E   C O D E S   S T A R T   //
 	//---------------------------------------------//
@@ -342,6 +475,19 @@
 		xhttp.open("GET", "http://localhost:8082/api/" + api);
 		xhttp.setRequestHeader("Content-type", "application/xml");
 		xhttp.send();
+	}
+	
+	//For posting data and Response: HTTP 205
+	function postData205(api,data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 202) {
+				alert(this.readyState + this.status );
+			}
+		};
+		xhttp.open("POST", "http://localhost:8082/Jedisabershop/" + api, true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(data);
 	}
 
 	//For posting data
@@ -407,7 +553,41 @@
 				}
 			}
 		}
+		
 	}
+	
+	//These functions for automated drag and drop support for combat forms
+	function allowDrop(ev) {
+	    ev.preventDefault();
+	}
+	
+	function drag(ev) {
+	    ev.dataTransfer.setData("text/html", ev.target.id);
+	}
+	
+	function dropUnselected(ev) {
+	    ev.preventDefault();
+	    var data = ev.dataTransfer.getData("text/html");
+	    document.getElementById(data.substring(0,data.indexOf("_"))).checked = false;
+	    document.getElementById("divUnselectedCombatForm").appendChild(document.getElementById(data));
+	}
+	function dropSelected(ev) {
+	    ev.preventDefault();
+	    var data = ev.dataTransfer.getData("text/html");
+	    document.getElementById(data.substring(0,data.indexOf("_"))).checked = true;
+	    document.getElementById("divSelectedCombatForm").appendChild(document.getElementById(data));
+	}
+	
+	//Manually changing selection for combat forms
+	function changeCombatFormSelection(id){
+		var element = document.getElementById(id+"_div");
+		var checkBox = document.getElementById(id);
+		if (checkBox.checked == true){
+			document.getElementById("divSelectedCombatForm").appendChild(element);
+		} else {
+			document.getElementById("divUnselectedCombatForm").appendChild(element);
+		}
+	};
 	
 	//---------------------------------------------//
 	//     R E U S A B L E   C O D E S   E N D     //

@@ -34,12 +34,15 @@ public class CombatFormService {
 	
 	//Init combatForm is for adding all the combatForms on the database to simpleSecurityController when application restarts
 	public void initCombatForms() {
-		String[] combatFormsArray = {"Shii-Cho", "Makashi", "Soresu", "Ataru", "Shien (Djem So)", "Niman", "Juyo (Vaapad)"};
-		for(String s: combatFormsArray) {
-			System.out.println(s);
-			CombatForm combatForm = new CombatForm();
-			combatForm.setName(s);
-			addNewCombatForm(combatForm);
+		CombatForm combatFormShiiCho = getCombatFormByName("Shii-Cho");
+		if(combatFormShiiCho == null) {
+			String[] combatFormsArray = {"Shii-Cho", "Makashi", "Soresu", "Ataru", "Shien (Djem So)", "Niman", "Juyo (Vaapad)"};
+			for(String s: combatFormsArray) {
+				System.out.println(s);
+				CombatForm combatForm = new CombatForm();
+				combatForm.setName(s);
+				addNewCombatForm(combatForm);
+			}
 		}
 	}
 	

@@ -57,8 +57,6 @@
 					var divCombatForm = document.createElement("DIV"); 
 					divCombatForm.className="row";
 					divCombatForm.style="margin-top:5px; margin-bottom:5px";
-					divCombatForm.draggable="true";
-					divCombatForm.ondragstart=function(event){drag(event)};
 					divCombatForm.id = myObj[x].id + "_div"
 					var checkbox = document.createElement("INPUT");
 					checkbox.className = "col-sm-offset-1 col-sm-1";
@@ -71,13 +69,22 @@
 					label.className = "col-sm-11";
 					label.appendChild(labelText);
 					divCombatForm.appendChild(label);
-					divUnselectedCombatForm.appendChild(divCombatForm);
+					if(myObj[x].name != "Shii-Cho"){
+						divCombatForm.draggable="true";
+						divCombatForm.ondragstart=function(event){drag(event)};
+						divUnselectedCombatForm.appendChild(divCombatForm);
+					} else {
+						checkbox.checked = true;
+						checkbox.disabled = true;
+						divSelectedCombatForm.appendChild(divCombatForm);
+					}
 				}
 			}
 		};
 		xhttp.open("GET", "http://localhost:8082/Jedisabershop/combatform");
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send();
+		
 	}
 	
 	//For posting user data as Json

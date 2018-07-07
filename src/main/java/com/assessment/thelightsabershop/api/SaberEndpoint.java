@@ -1,12 +1,7 @@
 package com.assessment.thelightsabershop.api;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,9 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.assessment.thelightsabershop.controller.CrystalService;
@@ -48,6 +41,16 @@ public class SaberEndpoint {
 		return Response.ok(sabers).build();
 	}
 	
+	//Single Saber adding
+	@Path("/json")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response addSaber(Saber saber){
+		saberService.addSaber(saber);
+		return Response.accepted(saber.getName() + " successfully added").build();	
+	}
+	
 	// For getting All the Sabers As XML Data
 	@Path("/xml")
 	@GET
@@ -55,25 +58,6 @@ public class SaberEndpoint {
 	public  Response getAllSabersXML(){
 		return Response.ok(new GenericEntity<Iterable<Saber>>(saberService.getAllSabers()) {}).build();
 	}
-	
-	/*
-	 * THIS PART IS UNDER TEST
-	 * 
-	@Path("/xmlFile")
-	@GET
-	@ResponseBody public OutputStream getFile(HttpServletResponse response) throws IOException {
-	    
-	    Response responseXml = Response.ok(new GenericEntity<Iterable<Saber>>(saberService.getAllSabers()) {}).build();
-	    String str = responseXml.toString();
-	    FileOutputStream outputStream = new FileOutputStream("src/test/resources/Saber.xml");
-	    byte[] strToBytes = str.getBytes();
-	    outputStream.write(strToBytes);
-	    
-	    outputStream.close();
-	    return outputStream;
-	}
-	*/
-	
 	
 	/*
 	 * This code can be used for getting JSON data and XML data from the same adress
@@ -113,15 +97,6 @@ public class SaberEndpoint {
 			}
 		}
 		return Response.status(205).build();
-	}
-	
-	//Single Saber adding
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response addSaber(Saber saber){
-		saberService.addSaber(saber);
-		return Response.accepted(saber.getName() + " successfully added").build();	
 	}
 	
 }

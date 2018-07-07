@@ -21,6 +21,11 @@ public class SaberService {
 		return saberRepository.findById(saberId).get();
 	}
 	
+	//this method is for checking that saber is existing before calling getSaberById method
+	public boolean checkSaberById(long saberId) {
+		return saberRepository.existsById(saberId);
+	}
+	
 	public Saber addSaber(Saber saber) {
 		Saber result = saberRepository.save(saber);
 		return result;

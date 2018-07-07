@@ -48,7 +48,8 @@ public class SaberEndpoint {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response addSaber(Saber saber){
 		saberService.addSaber(saber);
-		return Response.accepted(saber.getName() + " successfully added").build();	
+		return Response.status(205).build();
+		//return Response.accepted(saber.getName() + " successfully added").build();	
 	}
 	
 	// For getting All the Sabers As XML Data

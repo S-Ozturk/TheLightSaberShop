@@ -21,7 +21,7 @@ public class CombatForm {
     
     private String name;
     
-    @OneToMany(mappedBy="combatForm")
+    @ManyToMany(mappedBy="saberCombatForms")
     private List<Saber> sabers;
     
     @ManyToMany(mappedBy="combatForms")

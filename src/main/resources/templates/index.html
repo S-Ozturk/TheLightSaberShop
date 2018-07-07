@@ -82,6 +82,7 @@
 				
 			case"Add New Light Saber":
 				var header = document.createElement("H3");
+				header.id = "header_result";
 				header.className="col-sm-12 text-center";
 				container.appendChild(header);
 				header.innerHTML  = "Add New Light Saber Form";
@@ -295,7 +296,6 @@
 				}
 				
 				createFormInput("Light Saber's Name","name","text");
-				createFormInput("Planet","planet","text");
 				createFormInput("Avability","avability","number");
 				createFormInput("Search For Crystal","crystalSearch","text");
 				createCrystalTable();
@@ -400,18 +400,15 @@
 	function saveNewLightSaber(){
 		var name, planet, avability, crystal, combatForms = "";
 		name = document.getElementById("name_input").value;
-		planet = document.getElementById("planet_input").value;
 		avability = document.getElementById("avability_input").value;
 		var radios = document.getElementsByName("crystalRadio");
 	    for (var i = 0; i < radios.length; i++)
 	    {
-	        {
+	    	if(radios[i].checked == true){
 	        	crystal = radios[i].value;
 	        	break;
-	        }
+	    	}
 	    }
-	    
-	    var divSelectedCombatForm = document.getElementById("divSelectedCombatForm")
 	    var checkboxes = document.getElementById("divSelectedCombatForm").getElementsByTagName("INPUT");
 	    for (var i = 0; i < checkboxes.length; i++)
 	    {
@@ -421,15 +418,15 @@
     			combatForms = combatForms + ',{"id":'+ checkboxes[i].id +'}';
     		}
 	    }
-	    
-	    alert(name + " - " + planet + " - " + avability + " - " + crystal + " - " + combatForms);
 		if(name == ""){
 			alert("Force doesn't like this name");
-		} else if (planet == ""){
-			
+		} else if (crystal == null){
+			alert("Light sabers gets their power from crystal, without crystal it will be useless");
+		}else if (avability == ""){
+			postData205("saber/json",'{"name":"' + name + '", "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
+		}else{
+			postData205("saber/json",'{"name":"' + name + '","avability":' + avability + ', "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
 		}
-		
-		postData205("saber/json","{}");
 	}
 	
 	//---------------------------------------------//
@@ -481,8 +478,33 @@
 	function postData205(api,data) {
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
-			if (this.readyState == 4 && this.status == 202) {
-				alert(this.readyState + this.status );
+			if (this.readyState == 4 && this.status == 205) {
+				switch(api){
+				case "saber/json":
+					var header = document.getElementById("header_result");
+					header.innerHTML = "Force Accepted This Light Saber";
+					var span = document.createElement("SPAN");
+					span.className = "glyphicon glyphicon-ok";
+					header.appendChild(span);
+					document.getElementById("name_input").value="";
+					document.getElementById("avability_input").value="";
+					document.getElementById("crystalSearch").value="";
+					var radios = document.getElementsByName("crystalRadio");
+				    for (var i = 0; i < radios.length; i++)
+				    {
+				    	radios[i].checked = false;
+				    }
+				    var checkboxes = document.getElementById("divSelectedCombatForm").getElementsByTagName("INPUT");
+				    var count = checkboxes.length;
+				    for (var i = 0; i <= count;) {
+				    	if(checkboxes[i].disabled != true) {
+				    		checkboxes[i].click();
+			    		}else{
+				    		i++;
+				    	}
+				    }
+					break;
+				}
 			}
 		};
 		xhttp.open("POST", "http://localhost:8082/Jedisabershop/" + api, true);

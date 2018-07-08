@@ -78,12 +78,13 @@
 				selectSortType.className = "form-control";
 				selectSortType.onchange = function(){getSaberSorted()};
 				divSortType.appendChild(selectSortType);
-				var optionsSortValue = [{name:"Name", value:"name"},{name:"Available", value:"available"},{name:"Crystal Name", value:"crystalName"},{name:"Color", value:"color"}];
+				var optionsSortValue = [{name:"Name", value:"name"},{name:"Available", value:"available"},{name:"Crystal Name", value:"crystalName"}
+				,{name:"Crystal Planet", value:"planet"},{name:"Color", value:"color"}];
 				for (x in optionsSortValue){
 					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
 				};
 				
-				var optionsSortType = [{name:"Ascending", value:true},{name:"Descending", value:false}];
+				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
 				for (x in optionsSortType){
 					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
 				};
@@ -399,7 +400,6 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				alert(this.responseText);
 				var container = document.getElementById("containerUser");
 				removeElement("emailLabel");
 				container.innerHTML = "";
@@ -492,23 +492,16 @@
 	
 	//For getting data as json
 	function getSaberSorted() {
-		var myObj, x;
+		var myArr, myObj, x;
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				myArr = JSON.parse(this.responseText);
+				myArr = sortSaberArray(myArr);
 				var container = document.getElementById("divSabers");
 				container.innerHTML="";
-				var combatForm = document.getElementById("combatFilter").value;
-				var key = document.getElementById("selectSortValue").value;
-				var sort = document.getElementById("selectSortType").value;
-				alert(combatForm + " - " + key + " - " + sort);
-				myArr = sortArray(myArr, key, sort);
 				for(x in myArr){
-					for (y in myArr[x]){
-						alert(y);
-					}
-					alert(x);
+					myObj = myArr[x];
 					if((x % 3) == 0){
 						var rowForThree = document.createElement("DIV");
 						rowForThree.className = "row";
@@ -522,7 +515,7 @@
 					itemDiv.appendChild(itemDivBordered);
 					var labelSaberName = document.createElement("LABEL");
 					labelSaberName.className = "col-sm-12 text-center padding-left-right-0";
-					labelSaberName.innerHTML = myArr[x].name;
+					labelSaberName.innerHTML = myObj.name;
 					itemDivBordered.appendChild(labelSaberName);
 					var labelCrystalName = document.createElement("LABEL");
 					labelCrystalName.className = "col-sm-3 text-right padding-left-right-0";
@@ -530,19 +523,26 @@
 					itemDivBordered.appendChild(labelCrystalName);
 					var labelCrystalNameValue = document.createElement("LABEL");
 					labelCrystalNameValue.className = "col-sm-9 padding-left-right-0";
-					labelCrystalNameValue.innerHTML = myArr[x].crystal.name;
+					labelCrystalNameValue.innerHTML =myObj.crystal.name;
 					itemDivBordered.appendChild(labelCrystalNameValue);
+					var labelCrystalName = document.createElement("LABEL");
+					labelCrystalPlanet.classPlanet = "col-sm-3 text-right padding-left-right-0";
+					labelCrystalPlanet.innerHTML = "Crystal: ";
+					itemDivBordered.appendChild(labelCrystalPlanet);
+					var labelCrystalPlanetValue = document.createElement("LABEL");
+					labelCrystalPlanetValue.classPlanet = "col-sm-9 padding-left-right-0";
+					labelCrystalPlanetValue.innerHTML =myObj.crystal.planet;
+					itemDivBordered.appendChild(labelCrystalPlanetValue);
 					var labelCrystalColor = document.createElement("LABEL");
 					labelCrystalColor.className = "col-sm-3 text-right padding-left-right-0";
 					labelCrystalColor.innerHTML = "Color: ";
 					itemDivBordered.appendChild(labelCrystalColor);
 					var labelCrystalColorValue = document.createElement("LABEL");
 					labelCrystalColorValue.className = "col-sm-9 padding-left-right-0";
-					labelCrystalColorValue.innerHTML = myArr[x].crystal.color;
+					labelCrystalColorValue.innerHTML = myObj.crystal.color;
 					itemDivBordered.appendChild(labelCrystalColorValue);
 					
 				}
-				alert(myObj);
 			}
 		};
 		xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/json");
@@ -733,16 +733,68 @@
 		}
 	};
 	
-	//Sorting function for different situations
-	function sortArray(array,key, sort) {
-	    array.sort(function(a, b) {
-	        if (a[key] < b[key])
-	            return sort ? 1 : -1;
-	        if (a[key] > b[key])
-	            return sort ? -1 : 1;
-	        return 0;
-	    });
-	    return array;
+	//Sorting function for Saber List
+	function sortSaberArray(array) {
+		var sort,subKey ="";
+		var sortType = document.getElementById("selectSortType").value;
+		if(sortType == "Asc"){
+			sort = false;
+		} else {
+			sort = true;
+		}	
+		var key = document.getElementById("selectSortValue").value;
+		switch(key){
+		case "crystalName":
+			key = "crystal";
+			subKey = "name";
+			break;
+		case "color":
+			subKey = key;
+			key = "crystal";
+			break;
+		case "planet":
+			subKey = key;
+			key = "crystal";
+			break;
+		}
+		if(typeof array[0][key] == "string" || typeof array[0][key][subKey] == "string" ){
+			if(subKey != ""){
+				array.sort(function(a, b) {
+			        if (a[key][subKey].toLowerCase() < b[key][subKey].toLowerCase()){
+			            return sort ? 1 : -1;
+			        }
+			        if (a[key][subKey].toLowerCase() > b[key][subKey].toLowerCase()){
+			            return sort ? -1 : 1;
+			        }
+			        return 0;
+			    });
+			    return array;
+			}else{
+			    array.sort(function(a, b) {
+			        if (a[key].toLowerCase() < b[key].toLowerCase()){
+			            return sort ? 1 : -1;
+			        }
+			        if (a[key].toLowerCase() > b[key].toLowerCase()){
+			            return sort ? -1 : 1;
+			        }
+			        return 0;
+			    });
+			    return array;
+			}
+		}else{
+		    array.sort(function(a, b) {
+		        if (a[key] < b[key]){
+		            return sort ? 1 : -1;
+		        }
+		        if (a[key] > b[key]){
+		            return sort ? -1 : 1;
+		        }
+		        return 0;
+		    });
+		    return array;
+		}
+
+		
 	};
 	
 	//adding option to select function

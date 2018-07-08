@@ -21,13 +21,15 @@ public class UserService {
 	@Autowired SimpleSecurityController simpleSecurityController;
 
 	public void addNewUser (User user) {
-		//Adding registration date for the long term because users age will be different next year 
-		Calendar now = Calendar.getInstance();
-		int year = now.get(Calendar.YEAR);
-		user.setRegistrationYear(year);
-		User result = userRepository.save(user);
-		//Adding user to simpleSecurityController to let the user to be able to use his/her account
-		simpleSecurityController.add(result.getEmail(), user.getPassword());
+		if( getUserByEmail( user.getEmail() ) == null ){
+			//Adding registration date for the long term because users age will be different next year 
+			Calendar now = Calendar.getInstance();
+			int year = now.get(Calendar.YEAR);
+			user.setRegistrationYear(year);
+			User result = userRepository.save(user);
+			//Adding user to simpleSecurityController to let the user to be able to use his/her account
+			simpleSecurityController.add(result.getEmail(), user.getPassword());
+		}
 	}
 
 	public Iterable<User> getAllUsers() {
@@ -46,4 +48,5 @@ public class UserService {
 	public User getUserByEmail(String email){
 		return userRepository.findByEmail(email);
 	}
+	
 }

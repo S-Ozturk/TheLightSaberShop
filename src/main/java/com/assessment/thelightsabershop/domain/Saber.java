@@ -14,8 +14,9 @@ import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+
 @Entity
+@XmlRootElement
 public class Saber {
 	
 	@Id

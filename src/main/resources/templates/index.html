@@ -507,6 +507,26 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				myArr = JSON.parse(this.responseText);
+				var combatFilterValue = document.getElementById("combatFilter").value;
+				if(combatFilterValue != "all"){
+					var removeFromArr = [];
+					for(x in myArr){
+						var counter = true;
+						innerLoop:
+						for(y in myArr[x].saberCombatForms){
+							if(myArr[x].saberCombatForms[y].name == combatFilterValue) {
+								counter = false;
+								break innerLoop;
+							}
+						}
+						if(counter) removeFromArr.push(x);
+					}
+					removeFromArr.sort(function(a, b){return b - a});
+					
+					for(x in removeFromArr) {
+						myArr.splice(removeFromArr[x],1);
+					}
+				}
 				myArr = sortSaberArray(myArr);
 				var container = document.getElementById("divSabers");
 				container.innerHTML="";

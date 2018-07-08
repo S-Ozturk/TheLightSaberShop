@@ -500,7 +500,7 @@
 		}
 	}
 	
-	//For getting data as json
+	//For geting light sabers and after that sorts and filters it
 	function getSaberSorted() {
 		var myArr, myObj, x;
 		var xhttp = new XMLHttpRequest();
@@ -529,14 +529,20 @@
 					labelSaberName.innerHTML = myObj.name;
 					labelSaberName.style.fontWeight = "bold";
 					itemDivBordered.appendChild(labelSaberName);
-					
 					var image = document.createElement("IMG");
 					image.className = "col-sm-12 padding-left-right-0";
 					image.id = myObj.id + "_img";
-					image.src = "/pictures/light_saber_" + myObj.crystal.color + ".png";
+					var picColor = myObj.crystal.color.toLowerCase();
+					if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+						image.src = "/pictures/light_saber_" + myObj.crystal.color + ".png";
+					}else{
+						image.src = "/pictures/light_saber_unknown.png";
+					}
+					if(document.getElementById("age") != null && document.getElementById("force").innerHTML != "Unlimited" && myObj.crystal.powerUsageMultiplier > 100 ){
+						itemDivBordered.onmouseover = function(){thisIsNot(this.id, false)};
+						itemDivBordered.onmouseout = function(){thisIsNot(this.id, true)};
+					}
 					itemDivBordered.appendChild(image);
-					
-					
 					var labelCrystalName = document.createElement("LABEL");
 					labelCrystalName.className = "col-sm-3 text-right padding-left-right-0";
 					labelCrystalName.innerHTML = "Crystal: ";
@@ -562,6 +568,7 @@
 					var labelCrystalColorValue = document.createElement("LABEL");
 					labelCrystalColorValue.className = "col-sm-9 padding-left-right-5";
 					labelCrystalColorValue.style.fontWeight = "normal";
+					labelCrystalColorValue.id = myObj.id + "_color";
 					labelCrystalColorValue.innerHTML = myObj.crystal.color;
 					itemDivBordered.appendChild(labelCrystalColorValue);
 					
@@ -571,6 +578,21 @@
 		xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/json");
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send();
+	}
+	
+	//Just for a small joke - if the power usage of the light saber is higher then the user
+	function thisIsNot(id, out){
+		var element = document.getElementById(id+"_img");
+		if(out){
+			var picColor = document.getElementById(id+"_color").innerHTML.toLowerCase();
+			if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+				element.src = "/pictures/light_saber_" + picColor + ".png";
+			}else{
+				element.src = "/pictures/light_saber_unknown.png";
+			}
+		}else{
+			element.src = "/pictures/light_saber_not.png";
+		}
 	}
 	
 	//---------------------------------------------//

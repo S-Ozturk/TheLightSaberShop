@@ -19,6 +19,7 @@
 			if(![[${#httpServletRequest.isUserInRole("USER")}]]){
 				removeElement("logoutMenu");
 				removeElement("saberListMenu");
+				removeElement("emailLabel");
 			};
 		};
 		if([[${#httpServletRequest.isUserInRole("JEDIMASTER")}]] || [[${#httpServletRequest.isUserInRole("USER")}]]){
@@ -45,6 +46,12 @@
 				header.className="col-sm-12 text-center";
 				divHeader.appendChild(header);
 				header.innerHTML  = "Light Sabers";
+				if(document.getElementById("containerUser").getElementsByTagName("LABEL").length == 0){
+					var header = document.createElement("P");
+					header.className="col-sm-12 text-center bg-warning";
+					divHeader.appendChild(header);
+					header.innerHTML  = "You can <b>Sign Up</b> / <b>Login</b> to see specialized <b>Light Sabers</b> and <b>Order</b>";
+				}
 				var div = document.createElement("DIV");
 				div.className = "container-fluid margin-top-10";
 				container.appendChild(div);
@@ -412,6 +419,16 @@
 				nameLabel.innerHTML = myObj.name;
 				nameLabel.className = "margin-right-5";
 				container.appendChild(nameLabel);
+				var seperatorAge = document.createElement("LABEL");
+				seperatorAge.innerHTML = "  -  Age: ";
+				seperatorAge.className = "margin-right-5";
+				container.appendChild(seperatorAge);
+				var ageLabel = document.createElement("LABEL");
+				ageLabel.innerHTML = myObj.age;
+				ageLabel.id ="age";
+				ageLabel.className = "margin-right-5";
+				container.appendChild(ageLabel);
+				var dissolvedLabel = document.createElement("LABEL");
 				if(myObj.dissolvedInForce){
 					var seperator = document.createElement("LABEL");
 					seperator.innerHTML = "  -  ";
@@ -429,16 +446,9 @@
 					removeElement("lightSabersMenu");
 					removeElement("saberListMenu");
 				}else{
-					var seperatorAge = document.createElement("LABEL");
-					seperatorAge.innerHTML = "  -  Age: ";
-					seperatorAge.className = "margin-right-5";
-					container.appendChild(seperatorAge);
-					var ageLabel = document.createElement("LABEL");
-					ageLabel.innerHTML = myObj.age;
-					ageLabel.className = "margin-right-5";
-					container.appendChild(ageLabel);
 					var seperatorForce = document.createElement("LABEL");
 					var forceLabel = document.createElement("LABEL");
+					forceLabel.id = "force";
 					if(myObj.force < 0){
 						seperatorForce.innerHTML = "  -  Force is so strong with you! it's ";
 						forceLabel.innerHTML = "Unlimited";
@@ -512,25 +522,37 @@
 					rowForThree.appendChild(itemDiv);
 					var itemDivBordered = document.createElement("DIV");
 					itemDivBordered.className = "col-sm-12 well";
+					itemDivBordered.id = myObj.id;
 					itemDiv.appendChild(itemDivBordered);
 					var labelSaberName = document.createElement("LABEL");
 					labelSaberName.className = "col-sm-12 text-center padding-left-right-0";
 					labelSaberName.innerHTML = myObj.name;
+					labelSaberName.style.fontWeight = "bold";
 					itemDivBordered.appendChild(labelSaberName);
+					
+					var image = document.createElement("IMG");
+					image.className = "col-sm-12 padding-left-right-0";
+					image.id = myObj.id + "_img";
+					image.src = "/pictures/light_saber_" + myObj.crystal.color + ".png";
+					itemDivBordered.appendChild(image);
+					
+					
 					var labelCrystalName = document.createElement("LABEL");
 					labelCrystalName.className = "col-sm-3 text-right padding-left-right-0";
 					labelCrystalName.innerHTML = "Crystal: ";
 					itemDivBordered.appendChild(labelCrystalName);
 					var labelCrystalNameValue = document.createElement("LABEL");
-					labelCrystalNameValue.className = "col-sm-9 padding-left-right-0";
+					labelCrystalNameValue.className = "col-sm-9 padding-left-right-5";
+					labelCrystalNameValue.style.fontWeight = "normal";
 					labelCrystalNameValue.innerHTML =myObj.crystal.name;
 					itemDivBordered.appendChild(labelCrystalNameValue);
-					var labelCrystalName = document.createElement("LABEL");
-					labelCrystalPlanet.classPlanet = "col-sm-3 text-right padding-left-right-0";
-					labelCrystalPlanet.innerHTML = "Crystal: ";
+					var labelCrystalPlanet = document.createElement("LABEL");
+					labelCrystalPlanet.className = "col-sm-3 text-right padding-left-right-0";
+					labelCrystalPlanet.innerHTML = "Planet: ";
 					itemDivBordered.appendChild(labelCrystalPlanet);
 					var labelCrystalPlanetValue = document.createElement("LABEL");
-					labelCrystalPlanetValue.classPlanet = "col-sm-9 padding-left-right-0";
+					labelCrystalPlanetValue.className = "col-sm-9 padding-left-right-5";
+					labelCrystalPlanetValue.style.fontWeight = "normal";
 					labelCrystalPlanetValue.innerHTML =myObj.crystal.planet;
 					itemDivBordered.appendChild(labelCrystalPlanetValue);
 					var labelCrystalColor = document.createElement("LABEL");
@@ -538,7 +560,8 @@
 					labelCrystalColor.innerHTML = "Color: ";
 					itemDivBordered.appendChild(labelCrystalColor);
 					var labelCrystalColorValue = document.createElement("LABEL");
-					labelCrystalColorValue.className = "col-sm-9 padding-left-right-0";
+					labelCrystalColorValue.className = "col-sm-9 padding-left-right-5";
+					labelCrystalColorValue.style.fontWeight = "normal";
 					labelCrystalColorValue.innerHTML = myObj.crystal.color;
 					itemDivBordered.appendChild(labelCrystalColorValue);
 					

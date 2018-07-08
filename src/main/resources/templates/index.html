@@ -19,6 +19,7 @@
 			if(![[${#httpServletRequest.isUserInRole("USER")}]]){
 				removeElement("logoutMenu");
 				removeElement("saberListMenu");
+				removeElement("emailLabel");
 			};
 		};
 		if([[${#httpServletRequest.isUserInRole("JEDIMASTER")}]] || [[${#httpServletRequest.isUserInRole("USER")}]]){
@@ -32,9 +33,76 @@
 		};
 	};
 	
+	
+	// Code for generation contents in the container when pages from menu link selected
 	function generatePage(page){
 		var container = document.getElementById("container");
 		switch(page){
+			case "Light Sabers":
+				var divHeader = document.createElement("DIV");
+				divHeader.className="container-fluid";
+				container.appendChild(divHeader);
+				var header = document.createElement("H3");
+				header.className="col-sm-12 text-center";
+				divHeader.appendChild(header);
+				header.innerHTML  = "Light Sabers";
+				if(document.getElementById("containerUser").getElementsByTagName("LABEL").length == 0){
+					var header = document.createElement("P");
+					header.className="col-sm-12 text-center bg-warning";
+					divHeader.appendChild(header);
+					header.innerHTML  = "You can <b>Sign Up</b> / <b>Login</b> to see specialized <b>Light Sabers</b> and <b>Order</b>";
+				}
+				var div = document.createElement("DIV");
+				div.className = "container-fluid margin-top-10";
+				container.appendChild(div);
+				var divCombatFormFilter = document.createElement("DIV");
+				divCombatFormFilter.className = "col-sm-4";
+				div.appendChild(divCombatFormFilter);
+				var combatFilter = document.createElement("SELECT");
+				combatFilter.id = "combatFilter";
+				combatFilter.className = "form-control";
+				combatFilter.onchange = function(){getSaberSorted()};
+				divCombatFormFilter.appendChild(combatFilter);
+				var optionsCombatForm = [{name:"All Combat Forms", value:"all"},{name:"Shii-Cho", value:"Shii-Cho"},{name:"Makashi", value:"Makashi"},
+					{name:"Soresu", value:"Soresu"},{name:"Ataru", value:"Ataru"},{name:"Shien (Djem So)", value:"Shien (Djem So)"},
+					{name:"Niman", value:"Niman"},{name:"Juyo (Vaapad)", value:"Juyo (Vaapad)"}];
+				for (x in optionsCombatForm){
+					addOption("combatFilter", optionsCombatForm[x].name,  optionsCombatForm[x].value);
+				};
+				var divSortValue = document.createElement("DIV");
+				divSortValue.className = "col-sm-offset-2 col-sm-3";
+				div.appendChild(divSortValue);
+				var divSortType = document.createElement("DIV");
+				divSortType.className = "col-sm-3";
+				div.appendChild(divSortType);
+				var selectSortValue = document.createElement("SELECT");
+				selectSortValue.id = "selectSortValue";
+				selectSortValue.className = "form-control";
+				selectSortValue.onchange = function(){getSaberSorted()};
+				divSortValue.appendChild(selectSortValue);
+				var selectSortType = document.createElement("SELECT");
+				selectSortType.id = "selectSortType";
+				selectSortType.className = "form-control";
+				selectSortType.onchange = function(){getSaberSorted()};
+				divSortType.appendChild(selectSortType);
+				var optionsSortValue = [{name:"Name", value:"name"},{name:"Available", value:"available"},{name:"Crystal Name", value:"crystalName"}
+				,{name:"Crystal Planet", value:"planet"},{name:"Color", value:"color"}];
+				for (x in optionsSortValue){
+					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
+				};
+				
+				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
+				for (x in optionsSortType){
+					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
+				};
+				
+				var divSabers = document.createElement("DIV");
+				divSabers.id = "divSabers";
+				divSabers.className = "container-fluid margin-top-10";
+				container.appendChild(divSabers);
+				getSaberSorted();
+				break;
+				
 			case "XML List":
 				var myObj, x;
 				var xhttp = new XMLHttpRequest();
@@ -106,6 +174,7 @@
 							input.placeholder = labelText;
 							if(inputType == "number"){
 								input.min = "0";
+								input.step = "1";
 							}
 							divInput.appendChild(input);
 							break;
@@ -338,7 +407,6 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
-				alert(this.responseText);
 				var container = document.getElementById("containerUser");
 				removeElement("emailLabel");
 				container.innerHTML = "";
@@ -351,6 +419,16 @@
 				nameLabel.innerHTML = myObj.name;
 				nameLabel.className = "margin-right-5";
 				container.appendChild(nameLabel);
+				var seperatorAge = document.createElement("LABEL");
+				seperatorAge.innerHTML = "  -  Age: ";
+				seperatorAge.className = "margin-right-5";
+				container.appendChild(seperatorAge);
+				var ageLabel = document.createElement("LABEL");
+				ageLabel.innerHTML = myObj.age;
+				ageLabel.id ="age";
+				ageLabel.className = "margin-right-5";
+				container.appendChild(ageLabel);
+				var dissolvedLabel = document.createElement("LABEL");
 				if(myObj.dissolvedInForce){
 					var seperator = document.createElement("LABEL");
 					seperator.innerHTML = "  -  ";
@@ -368,16 +446,9 @@
 					removeElement("lightSabersMenu");
 					removeElement("saberListMenu");
 				}else{
-					var seperatorAge = document.createElement("LABEL");
-					seperatorAge.innerHTML = "  -  Age: ";
-					seperatorAge.className = "margin-right-5";
-					container.appendChild(seperatorAge);
-					var ageLabel = document.createElement("LABEL");
-					ageLabel.innerHTML = myObj.age;
-					ageLabel.className = "margin-right-5";
-					container.appendChild(ageLabel);
 					var seperatorForce = document.createElement("LABEL");
 					var forceLabel = document.createElement("LABEL");
+					forceLabel.id = "force";
 					if(myObj.force < 0){
 						seperatorForce.innerHTML = "  -  Force is so strong with you! it's ";
 						forceLabel.innerHTML = "Unlimited";
@@ -426,6 +497,101 @@
 			postData205("saber/json",'{"name":"' + name + '", "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
 		}else{
 			postData205("saber/json",'{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
+		}
+	}
+	
+	//For geting light sabers and after that sorts and filters it
+	function getSaberSorted() {
+		var myArr, myObj, x;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myArr = JSON.parse(this.responseText);
+				myArr = sortSaberArray(myArr);
+				var container = document.getElementById("divSabers");
+				container.innerHTML="";
+				for(x in myArr){
+					myObj = myArr[x];
+					if((x % 3) == 0){
+						var rowForThree = document.createElement("DIV");
+						rowForThree.className = "row";
+						container.appendChild(rowForThree);
+					}
+					var itemDiv = document.createElement("DIV");
+					itemDiv.className = "col-sm-4 padding-left-right-5";
+					rowForThree.appendChild(itemDiv);
+					var itemDivBordered = document.createElement("DIV");
+					itemDivBordered.className = "col-sm-12 col-xs-12 well";
+					itemDivBordered.id = myObj.id;
+					itemDiv.appendChild(itemDivBordered);
+					var labelSaberName = document.createElement("LABEL");
+					labelSaberName.className = "col-sm-12 col-xs-12 text-center padding-left-right-0";
+					labelSaberName.innerHTML = myObj.name;
+					labelSaberName.style.fontWeight = "bold";
+					itemDivBordered.appendChild(labelSaberName);
+					var image = document.createElement("IMG");
+					image.className = "col-sm-12 col-xs-12 padding-left-right-0";
+					image.id = myObj.id + "_img";
+					var picColor = myObj.crystal.color.toLowerCase();
+					if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+						image.src = "/pictures/light_saber_" + myObj.crystal.color + ".png";
+					}else{
+						image.src = "/pictures/light_saber_unknown.png";
+					}
+					if(document.getElementById("age") != null && document.getElementById("force").innerHTML != "Unlimited" && myObj.crystal.powerUsageMultiplier > 100 ){
+						itemDivBordered.onmouseover = function(){thisIsNot(this.id, false)};
+						itemDivBordered.onmouseout = function(){thisIsNot(this.id, true)};
+					}
+					itemDivBordered.appendChild(image);
+					var labelCrystalName = document.createElement("LABEL");
+					labelCrystalName.className = "col-sm-3 col-xs-3 text-right padding-left-right-0";
+					labelCrystalName.innerHTML = "Crystal: ";
+					itemDivBordered.appendChild(labelCrystalName);
+					var labelCrystalNameValue = document.createElement("LABEL");
+					labelCrystalNameValue.className = "col-sm-9 col-xs-9 padding-left-right-5";
+					labelCrystalNameValue.style.fontWeight = "normal";
+					labelCrystalNameValue.innerHTML =myObj.crystal.name;
+					itemDivBordered.appendChild(labelCrystalNameValue);
+					var labelCrystalPlanet = document.createElement("LABEL");
+					labelCrystalPlanet.className = "col-sm-3 col-xs-3 text-right padding-left-right-0";
+					labelCrystalPlanet.innerHTML = "Planet: ";
+					itemDivBordered.appendChild(labelCrystalPlanet);
+					var labelCrystalPlanetValue = document.createElement("LABEL");
+					labelCrystalPlanetValue.className = "col-sm-9 col-xs-9 padding-left-right-5";
+					labelCrystalPlanetValue.style.fontWeight = "normal";
+					labelCrystalPlanetValue.innerHTML =myObj.crystal.planet;
+					itemDivBordered.appendChild(labelCrystalPlanetValue);
+					var labelCrystalColor = document.createElement("LABEL");
+					labelCrystalColor.className = "col-sm-3 col-xs-3 text-right padding-left-right-0";
+					labelCrystalColor.innerHTML = "Color: ";
+					itemDivBordered.appendChild(labelCrystalColor);
+					var labelCrystalColorValue = document.createElement("LABEL");
+					labelCrystalColorValue.className = "col-sm-9 col-xs-9 padding-left-right-5";
+					labelCrystalColorValue.style.fontWeight = "normal";
+					labelCrystalColorValue.id = myObj.id + "_color";
+					labelCrystalColorValue.innerHTML = myObj.crystal.color;
+					itemDivBordered.appendChild(labelCrystalColorValue);
+					
+				}
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/json");
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
+	//Just for a small joke - if the power usage of the light saber is higher then the user
+	function thisIsNot(id, out){
+		var element = document.getElementById(id+"_img");
+		if(out){
+			var picColor = document.getElementById(id+"_color").innerHTML.toLowerCase();
+			if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+				element.src = "/pictures/light_saber_" + picColor + ".png";
+			}else{
+				element.src = "/pictures/light_saber_unknown.png";
+			}
+		}else{
+			element.src = "/pictures/light_saber_not.png";
 		}
 	}
 	
@@ -571,7 +737,7 @@
 				document.getElementById(pageNames[x].id).className += " active";
 				pageId = pageNames[x].id;
 			} else {
-				if(document.getElementById(pageNames[x].id).className.includes(" active")){
+				if(document.getElementById(pageNames[x].id) != null && document.getElementById(pageNames[x].id).className.includes(" active")){
 					document.getElementById(pageNames[x].id).className = document.getElementById(pageNames[x].id).className.replace(" active","");
 				}
 			}
@@ -610,6 +776,79 @@
 		} else {
 			document.getElementById("divUnselectedCombatForm").appendChild(element);
 		}
+	};
+	
+	//Sorting function for Saber List
+	function sortSaberArray(array) {
+		var sort,subKey ="";
+		var sortType = document.getElementById("selectSortType").value;
+		if(sortType == "Asc"){
+			sort = false;
+		} else {
+			sort = true;
+		}	
+		var key = document.getElementById("selectSortValue").value;
+		switch(key){
+		case "crystalName":
+			key = "crystal";
+			subKey = "name";
+			break;
+		case "color":
+			subKey = key;
+			key = "crystal";
+			break;
+		case "planet":
+			subKey = key;
+			key = "crystal";
+			break;
+		}
+		if(typeof array[0][key] == "string" || typeof array[0][key][subKey] == "string" ){
+			if(subKey != ""){
+				array.sort(function(a, b) {
+			        if (a[key][subKey].toLowerCase() < b[key][subKey].toLowerCase()){
+			            return sort ? 1 : -1;
+			        }
+			        if (a[key][subKey].toLowerCase() > b[key][subKey].toLowerCase()){
+			            return sort ? -1 : 1;
+			        }
+			        return 0;
+			    });
+			    return array;
+			}else{
+			    array.sort(function(a, b) {
+			        if (a[key].toLowerCase() < b[key].toLowerCase()){
+			            return sort ? 1 : -1;
+			        }
+			        if (a[key].toLowerCase() > b[key].toLowerCase()){
+			            return sort ? -1 : 1;
+			        }
+			        return 0;
+			    });
+			    return array;
+			}
+		}else{
+		    array.sort(function(a, b) {
+		        if (a[key] < b[key]){
+		            return sort ? 1 : -1;
+		        }
+		        if (a[key] > b[key]){
+		            return sort ? -1 : 1;
+		        }
+		        return 0;
+		    });
+		    return array;
+		}
+
+		
+	};
+	
+	//adding option to select function
+	function addOption(select, optionName, optionValue){
+		var element = document.getElementById(select);
+		var option = document.createElement("OPTION");
+		option.innerHTML = optionName;
+		option.value = optionValue;
+		element.appendChild(option);
 	};
 	
 	//---------------------------------------------//

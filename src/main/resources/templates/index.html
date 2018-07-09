@@ -347,23 +347,8 @@
 					xhttp.setRequestHeader("Content-type", "application/json");
 					xhttp.send();
 					divFormHorizontal.appendChild(divFormGroup);
-					
 				}
-				
-				function createSaveButton(){
-					var divFormGroup = document.createElement("DIV");
-					divFormGroup.className = "form-group";
-					var divSaveButton = document.createElement("DIV");
-					divSaveButton.className = "col-sm-offset-3 col-sm-8";
-					var saveButton = document.createElement("BUTTON");
-					saveButton.className = "btn btn-default btn-lg btn-block";
-					saveButton.onclick = saveNewLightSaber;
-					saveButton.appendChild(document.createTextNode("Save Light Saber"));
-					divSaveButton.appendChild(saveButton);
-					divFormGroup.appendChild(divSaveButton);
-					divFormHorizontal.appendChild(divFormGroup);
-				}
-				
+
 				createFormInput("Light Saber's Name","name","text");
 				createFormInput("Available","available","number");
 				createFormInput("Search For Crystal","crystalSearch","text");
@@ -372,8 +357,62 @@
 				createSaveButton();
 				container.appendChild(divFormHorizontal);
 				break;
+				
+			case"Add Light Sabers From XML File":
+				var divHeader = document.createElement("DIV");
+				divHeader.className="container-fluid";
+				container.appendChild(divHeader);
+				var header = document.createElement("H3");
+				header.className="col-sm-12 text-center";
+				divHeader.appendChild(header);
+				header.innerHTML  = "Add Light Sabers From XML File";
+				var fileIcon = document.createElement("SPAN");
+				fileIcon.className="glyphicon glyphicon-file margin-left-5";
+				header.appendChild(fileIcon);
+				var form = document.createElement("FORM");
+				container.appendChild(form);
+				var inputDiv = document.createElement("DIV");
+				inputDiv.className = "container-fluid margin-top-30";
+				form.appendChild(inputDiv);
+				var inputLabel = document.createElement("LABEL");
+				inputLabel.className = "col-sm-5 control-label text-right";
+				inputLabel.innerHTML = "XML File: ";
+				inputDiv.appendChild(inputLabel);
+				var inputFile = document.createElement("INPUT");
+				inputFile.className = "col-sm-7 control-label";
+				inputFile.type = "file";
+				inputFile.id = "inputFile";
+				inputFile.accept = ".xml"
+				inputFile.addEventListener("getFile", getDataFromXmlFile, false);
+				inputDiv.appendChild(inputFile);
+				var buttonDiv = document.createElement("DIV");
+				buttonDiv.className = "container-fluid margin-top-30";
+				form.appendChild(buttonDiv);
+				var button = document.createElement("BUTTON");
+				button.className = "btn btn-default col-sm-offset-4 col-sm-4";
+				button.innerHTML = "Get XML Data From File";
+				button.onclick = function(){
+					var event = new Event("getFile");
+					inputFile.dispatchEvent(event);
+					};
+				//button.type = "";
+				buttonDiv.appendChild(button);
+				break;
 		}
 	}
+	
+	
+	//For reading and posting data from XML file
+	function getDataFromXmlFile(){
+		var files = document.getElementById("inputFile").files;
+		  var reader = new FileReader();
+		  reader.onload = function() {
+		    var parsed = new DOMParser().parseFromString(this.result, "application/xml");
+		    postDataXml("saber/xml", parsed);
+		  };
+		  reader.readAsText(files[0]);
+	}
+	
 	
 	// This function is for filtering the crytals table as the input in the searchbox
 	function filterCrystalListTable() {
@@ -564,33 +603,47 @@
 					}
 					itemDivBordered.appendChild(image);
 					var labelCrystalName = document.createElement("LABEL");
-					labelCrystalName.className = "col-sm-3 col-xs-3 text-right padding-left-right-0";
+					labelCrystalName.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
 					labelCrystalName.innerHTML = "Crystal: ";
 					itemDivBordered.appendChild(labelCrystalName);
 					var labelCrystalNameValue = document.createElement("LABEL");
-					labelCrystalNameValue.className = "col-sm-9 col-xs-9 padding-left-right-5";
+					labelCrystalNameValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
 					labelCrystalNameValue.style.fontWeight = "normal";
 					labelCrystalNameValue.innerHTML =myObj.crystal.name;
 					itemDivBordered.appendChild(labelCrystalNameValue);
 					var labelCrystalPlanet = document.createElement("LABEL");
-					labelCrystalPlanet.className = "col-sm-3 col-xs-3 text-right padding-left-right-0";
+					labelCrystalPlanet.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
 					labelCrystalPlanet.innerHTML = "Planet: ";
 					itemDivBordered.appendChild(labelCrystalPlanet);
 					var labelCrystalPlanetValue = document.createElement("LABEL");
-					labelCrystalPlanetValue.className = "col-sm-9 col-xs-9 padding-left-right-5";
+					labelCrystalPlanetValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
 					labelCrystalPlanetValue.style.fontWeight = "normal";
 					labelCrystalPlanetValue.innerHTML =myObj.crystal.planet;
 					itemDivBordered.appendChild(labelCrystalPlanetValue);
 					var labelCrystalColor = document.createElement("LABEL");
-					labelCrystalColor.className = "col-sm-3 col-xs-3 text-right padding-left-right-0";
+					labelCrystalColor.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
 					labelCrystalColor.innerHTML = "Color: ";
 					itemDivBordered.appendChild(labelCrystalColor);
 					var labelCrystalColorValue = document.createElement("LABEL");
-					labelCrystalColorValue.className = "col-sm-9 col-xs-9 padding-left-right-5";
+					labelCrystalColorValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
 					labelCrystalColorValue.style.fontWeight = "normal";
 					labelCrystalColorValue.id = myObj.id + "_color";
 					labelCrystalColorValue.innerHTML = myObj.crystal.color;
 					itemDivBordered.appendChild(labelCrystalColorValue);
+					var labelAvailable = document.createElement("LABEL");
+					labelAvailable.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+					labelAvailable.innerHTML = "Available: ";
+					itemDivBordered.appendChild(labelAvailable);
+					var labelAvailableValue = document.createElement("LABEL");
+					labelAvailableValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+					labelAvailableValue.style.fontWeight = "normal";
+					if(myObj.available > 0){
+						labelAvailableValue.innerHTML = "In Stock"
+					}else{
+						labelAvailableValue.innerHTML = "Out Of Stock";
+						labelAvailableValue.style.color = "red";
+					}
+					itemDivBordered.appendChild(labelAvailableValue);
 					
 				}
 			}
@@ -698,6 +751,19 @@
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send(data);
 	}
+	
+	//For posting data
+	function postDataXml(api,data) {
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 205) {
+				
+			}
+		};
+		xhttp.open("POST", "http://localhost:8082/Jedisabershop/" + api, true);
+		xhttp.setRequestHeader("Content-type", "application/xml");
+		xhttp.send(data);
+	}
 
 	//For posting data
 	function postData(api,data) {
@@ -707,7 +773,7 @@
 				document.getElementById("Container").innerHTML = this.responseText+" Item Added";
 			}
 		};
-		xhttp.open("POST", "http://localhost:8082/api/" + api, true);
+		xhttp.open("POST", "http://localhost:8082/Jedisabershop/" + api, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send(data);
 	}
@@ -720,7 +786,7 @@
 
 			}
 		};
-		xhttp.open("PUT", "http://localhost:8082/api/" + api, true);
+		xhttp.open("PUT", "http://localhost:8082/Jedisabershop/" + api, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send(data);
 	}
@@ -732,7 +798,7 @@
 			if (this.readyState == 4 && this.status == 204) {
 			};
 		};
-		xhttp.open("DELETE", "http://localhost:8082/api/" + api, true);
+		xhttp.open("DELETE", "http://localhost:8082/Jedisabershop/" + api, true);
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send(data);
 	};
@@ -893,8 +959,7 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jedi Master Menu<span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a onclick='changeTo("Add New Light Saber")'>Add New Light Saber</a></li>
-            <li><a onclick='changeTo("Add Light Sabers From File")'>Add Light Sabers From File</a></li>
-            <li><a onclick='changeTo("Add Light Sabers With JSON")'>Add Light Sabers With JSON</a></li>
+            <li><a onclick='changeTo("Add Light Sabers From XML File")'>Add Light Sabers From XML File</a></li>
             <li role="separator" class="divider"></li>
             <li><a onclick='changeTo("Stock List")'>Stock List</a></li>
           </ul>

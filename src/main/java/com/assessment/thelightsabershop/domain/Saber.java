@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -37,6 +38,9 @@ public class Saber {
         joinColumns=@JoinColumn(name="SABER_ID", referencedColumnName="ID"),
         inverseJoinColumns=@JoinColumn(name="COMBAT_FORM_ID", referencedColumnName="ID"))
     private List<CombatForm> saberCombatForms;
+    
+    @OneToMany(mappedBy="saber")
+    private List<CustomerOrder> customerOrders;
 
     @XmlElement
 	public Long getId() {

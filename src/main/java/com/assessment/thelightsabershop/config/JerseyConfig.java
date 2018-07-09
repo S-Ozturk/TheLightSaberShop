@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.assessment.thelightsabershop.api.CombatFormEndpoint;
 import com.assessment.thelightsabershop.api.CrystalEndpoint;
+import com.assessment.thelightsabershop.api.CustomerOrderEndpoint;
 import com.assessment.thelightsabershop.api.SaberEndpoint;
 import com.assessment.thelightsabershop.api.UserEndpoint;
 
@@ -16,6 +17,7 @@ public class JerseyConfig extends ResourceConfig {
 	public JerseyConfig(){
 		register(CrystalEndpoint.class);
 		register(CombatFormEndpoint.class);
+		register(CustomerOrderEndpoint.class);
 		register(SaberEndpoint.class);
 		register(UserEndpoint.class);
 	}

@@ -12,6 +12,9 @@ public class CustomerOrderService {
 	
 	@Autowired
 	private CustomerOrderRepository customerOrderRepository;
+	
+	@Autowired
+	private SaberService saberService;
 
 	public Iterable<CustomerOrder> getAllCustomerOrders() {
 		return customerOrderRepository.findAll();
@@ -23,6 +26,10 @@ public class CustomerOrderService {
 	
 	public CustomerOrder addCustomerOrder(CustomerOrder customerOrder) {
 		CustomerOrder result = customerOrderRepository.save(customerOrder);
+		if(result != null) {
+			System.out.println("working");
+			saberService.getSaberById(result.getSaber().getId()).setAvailable(result.getSaber().getAvailable() - result.getOrderAmount());
+		}
 		return result;
 	}
 	

@@ -348,6 +348,20 @@
 					xhttp.send();
 					divFormHorizontal.appendChild(divFormGroup);
 				}
+				
+				function createSaveButton(){
+					var divFormGroup = document.createElement("DIV");
+					divFormGroup.className = "form-group";
+					var divSaveButton = document.createElement("DIV");
+					divSaveButton.className = "col-sm-offset-3 col-sm-8";
+					var saveButton = document.createElement("BUTTON");
+					saveButton.className = "btn btn-default btn-lg btn-block";
+					saveButton.onclick = saveNewLightSaber;
+					saveButton.appendChild(document.createTextNode("Save Light Saber"));
+					divSaveButton.appendChild(saveButton);
+					divFormGroup.appendChild(divSaveButton);
+					divFormHorizontal.appendChild(divFormGroup);
+				}
 
 				createFormInput("Light Saber's Name","name","text");
 				createFormInput("Available","available","number");

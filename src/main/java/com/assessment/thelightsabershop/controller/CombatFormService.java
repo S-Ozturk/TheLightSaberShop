@@ -18,7 +18,8 @@ public class CombatFormService {
 	@Autowired
 	private CombatFormRepository combatFormRepository;
 	
-	@Autowired SimpleSecurityController simpleSecurityController;
+	@Autowired 
+	private SimpleSecurityController simpleSecurityController;
 
 	public void addNewCombatForm (CombatForm combatForm) {
 		combatFormRepository.save(combatForm);

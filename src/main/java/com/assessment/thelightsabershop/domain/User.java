@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 @Entity
 public class User {
@@ -22,12 +23,8 @@ public class User {
     
     private String name, email, password;
     
-    @ManyToMany(fetch=FetchType.EAGER)
-    @JoinTable(
-        name="USER_COMBAT_FORM",
-        joinColumns=@JoinColumn(name="USER_ID", referencedColumnName="ID"),
-        inverseJoinColumns=@JoinColumn(name="COMBAT_FORM_ID", referencedColumnName="ID"))
-    private List<CombatForm> combatForms;
+    @OneToMany(mappedBy="user")
+    private List<CustomerOrder> customerOrders;
 
 	public Long getId() {
 		return id;
@@ -106,14 +103,6 @@ public class User {
 		} else {
 			return "Padavan";
 		}
-	}
-
-	public List<CombatForm> getCombatForms() {
-		return combatForms;
-	}
-
-	public void setCombatForms(List<CombatForm> combatForms) {
-		this.combatForms = combatForms;
 	}
 	
 }

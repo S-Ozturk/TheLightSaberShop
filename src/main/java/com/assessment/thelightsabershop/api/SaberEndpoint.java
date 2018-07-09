@@ -1,5 +1,6 @@
 package com.assessment.thelightsabershop.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -16,8 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.assessment.thelightsabershop.controller.CombatFormService;
 import com.assessment.thelightsabershop.controller.CrystalService;
 import com.assessment.thelightsabershop.controller.SaberService;
+import com.assessment.thelightsabershop.domain.CombatForm;
 import com.assessment.thelightsabershop.domain.Crystal;
 import com.assessment.thelightsabershop.domain.Saber;
 
@@ -32,6 +35,9 @@ public class SaberEndpoint {
 	
 	@Autowired
 	private CrystalService crystalService;
+	
+	@Autowired
+	private CombatFormService combatFormService;
 
 	// For getting All the Sabers As JSON Data
 	@Path("/json")
@@ -92,8 +98,15 @@ public class SaberEndpoint {
 		//Created a loop for adding all of the Sabers
 		for(Saber s : sabers ) {
 			Saber tempSaber = new Saber();
+			tempSaber.setId(s.getId());
 			tempSaber.setName(s.getName());
 			tempSaber.setAvailable(s.getAvailable());
+			//Adds default combat form if there is no combat form assigned
+			if(s.getSaberCombatForms() == null) {
+				List<CombatForm> combatForms = new ArrayList<CombatForm>();
+				combatForms.add(combatFormService.getCombatFormByName("Shii-Cho"));
+				tempSaber.setSaberCombatForms(combatForms);
+			}
 			//First checking crystal's name and color
 			if(s.getCrystal().getName() != null && s.getCrystal().getColor() != null) {
 				Crystal temp = crystalService.getCrystalByNameAndColor(s.getCrystal().getName(), s.getCrystal().getColor());
@@ -104,6 +117,7 @@ public class SaberEndpoint {
 					Crystal newCrystal = new Crystal();
 					newCrystal.setName(s.getCrystal().getName());
 					newCrystal.setColor(s.getCrystal().getColor());
+					if(s.getCrystal().getPlanet() == null)newCrystal.setPlanet("Unknown"); 
 					tempSaber.setCrystal(crystalService.addCrystal(newCrystal));
 				}
 			} else {
@@ -117,4 +131,12 @@ public class SaberEndpoint {
 		return Response.status(205).build();
 	}
 	
+	@Path("/xml/{Z}")
+	@POST
+	@Consumes(MediaType.APPLICATION_XML)
+	public @ResponseStatus Response addSaberXMLWithAge(List<Saber> sabers, @PathParam("Z") int age) {
+		//Z is not necessary and does nothing...
+		Response response = addSaberXML(sabers);
+		return response;
+	}
 }

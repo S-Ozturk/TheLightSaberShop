@@ -27,6 +27,7 @@ public class SaberService {
 	}
 	
 	public Saber addSaber(Saber saber) {
+		if(checkSaberById(saber.getId())) saber.setId(null);
 		Saber result = saberRepository.save(saber);
 		return result;
 	}

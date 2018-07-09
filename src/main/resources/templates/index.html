@@ -461,7 +461,7 @@
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 200) {
 				var container = document.getElementById("containerUser");
-				removeElement("emailLabel");
+				//removeElement("emailLabel");
 				container.innerHTML = "";
 				myObj = JSON.parse(this.responseText);
 				var roleLabel = document.createElement("LABEL");
@@ -580,85 +580,151 @@
 						myArr.splice(removeFromArr[x],1);
 					}
 				}
-				myArr = sortSaberArray(myArr);
 				var container = document.getElementById("divSabers");
 				container.innerHTML="";
-				for(x in myArr){
-					myObj = myArr[x];
-					if((x % 3) == 0){
-						var rowForThree = document.createElement("DIV");
-						rowForThree.className = "row";
-						container.appendChild(rowForThree);
+				if(myArr.length > 0){
+					myArr = sortSaberArray(myArr);
+					for(x in myArr){
+						myObj = myArr[x];
+						if((x % 3) == 0){
+							var rowForThree = document.createElement("DIV");
+							rowForThree.className = "row";
+							container.appendChild(rowForThree);
+						}
+						var itemDiv = document.createElement("DIV");
+						itemDiv.className = "col-sm-4 padding-left-right-5";
+						rowForThree.appendChild(itemDiv);
+						var itemDivBordered = document.createElement("DIV");
+						itemDivBordered.className = "col-sm-12 col-xs-12 well";
+						itemDivBordered.id = myObj.id;
+						itemDiv.appendChild(itemDivBordered);
+						var labelSaberName = document.createElement("LABEL");
+						labelSaberName.className = "col-sm-12 col-xs-12 text-center padding-left-right-0";
+						labelSaberName.innerHTML = myObj.name;
+						labelSaberName.style.fontWeight = "bold";
+						itemDivBordered.appendChild(labelSaberName);
+						var image = document.createElement("IMG");
+						image.className = "col-sm-12 col-xs-12 padding-left-right-0";
+						image.id = myObj.id + "_img";
+						var picColor = myObj.crystal.color.toLowerCase();
+						if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+							image.src = "/pictures/light_saber_" + myObj.crystal.color + ".png";
+						}else{
+							image.src = "/pictures/light_saber_unknown.png";
+						}
+						if(document.getElementById("age") != null && document.getElementById("force").innerHTML != "Unlimited" && myObj.crystal.powerUsageMultiplier > 100 ){
+							itemDivBordered.onmouseover = function(){thisIsNot(this.id, false)};
+							itemDivBordered.onmouseout = function(){thisIsNot(this.id, true)};
+						}
+						itemDivBordered.appendChild(image);
+						var labelCrystalName = document.createElement("LABEL");
+						labelCrystalName.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+						labelCrystalName.innerHTML = "Crystal: ";
+						itemDivBordered.appendChild(labelCrystalName);
+						var labelCrystalNameValue = document.createElement("LABEL");
+						labelCrystalNameValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+						labelCrystalNameValue.style.fontWeight = "normal";
+						labelCrystalNameValue.innerHTML =myObj.crystal.name;
+						itemDivBordered.appendChild(labelCrystalNameValue);
+						var labelCrystalPlanet = document.createElement("LABEL");
+						labelCrystalPlanet.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+						labelCrystalPlanet.innerHTML = "Planet: ";
+						itemDivBordered.appendChild(labelCrystalPlanet);
+						var labelCrystalPlanetValue = document.createElement("LABEL");
+						labelCrystalPlanetValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+						labelCrystalPlanetValue.style.fontWeight = "normal";
+						labelCrystalPlanetValue.innerHTML =myObj.crystal.planet;
+						itemDivBordered.appendChild(labelCrystalPlanetValue);
+						var labelCrystalColor = document.createElement("LABEL");
+						labelCrystalColor.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+						labelCrystalColor.innerHTML = "Color: ";
+						itemDivBordered.appendChild(labelCrystalColor);
+						var labelCrystalColorValue = document.createElement("LABEL");
+						labelCrystalColorValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+						labelCrystalColorValue.style.fontWeight = "normal";
+						labelCrystalColorValue.id = myObj.id + "_color";
+						labelCrystalColorValue.innerHTML = myObj.crystal.color;
+						itemDivBordered.appendChild(labelCrystalColorValue);
+						var labelPower = document.createElement("LABEL");
+						labelPower.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+						labelPower.innerHTML = "Force: ";
+						itemDivBordered.appendChild(labelPower);
+						var labelPowerValue = document.createElement("LABEL");
+						labelPowerValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+						labelPowerValue.style.fontWeight = "normal";
+						if(document.getElementById("age") != null){
+							var age = document.getElementById("age").innerText;
+							labelPowerValue.innerHTML = ((myObj.crystal.powerUsageMultiplier * age) / 10) + " F";
+						}else{
+							labelPowerValue.innerHTML = myObj.crystal.powerUsageMultiplier + " %";
+						}
+						itemDivBordered.appendChild(labelPowerValue);
+						var labelPrice = document.createElement("LABEL");
+						labelPrice.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+						labelPrice.innerHTML = "Price: ";
+						itemDivBordered.appendChild(labelPrice);
+						var labelPriceValue = document.createElement("LABEL");
+						labelPriceValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+						labelPriceValue.style.fontWeight = "normal";
+						labelPriceValue.innerHTML = myObj.crystal.calculatedPrice;
+						itemDivBordered.appendChild(labelPriceValue);
+						var labelAvailable = document.createElement("LABEL");
+						labelAvailable.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
+						labelAvailable.innerHTML = "Available: ";
+						itemDivBordered.appendChild(labelAvailable);
+						var labelAvailableValue = document.createElement("LABEL");
+						labelAvailableValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
+						labelAvailableValue.style.fontWeight = "normal";
+						if(myObj.available > 0){
+							labelAvailableValue.innerHTML = "In Stock"
+						}else{
+							labelAvailableValue.innerHTML = "Out Of Stock";
+							labelAvailableValue.style.color = "red";
+						}
+						itemDivBordered.appendChild(labelAvailableValue);
+						var orderButton = document.createElement("BUTTON");
+						orderButton.type = "button";
+						orderButton.innerHTML = "Order";
+						if(myObj.available <= 0){
+							orderButton.disabled = "true";
+							orderButton.className = "btn btn-warning col-sm-6 col-xs-6 padding-left-right-5";
+						}else{
+							orderButton.className = "btn btn-primary col-sm-6 col-xs-6 padding-left-right-5";
+							orderButton.onclick = function(){
+								var id = this.parentElement.id;
+								var amount = document.getElementById(id + "_amount").value;
+								var email = document.getElementById("emailLabel").innerHTML;
+								alert(amount);
+								if(amount != "" && amount > 0){
+									alert('{"orderAmount":' + amount + ',"user":{"email":"' + email + '"}}');
+									postData("order/saber/" + id,'{"orderAmount":' + amount + ',"user":{"email":"' + email + '"}}');
+								}
+							};
+						}
+						if(document.getElementById("age") != null){
+							itemDivBordered.appendChild(orderButton);
+							divAmount = document.createElement("DIV");
+							divAmount.className = "col-sm-6 col-xs-6 padding-left-right-5";
+							itemDivBordered.appendChild(divAmount);
+							var amountInput = document.createElement("INPUT");
+							amountInput.className = "form-control col-sm-6 col-xs-6 padding-left-right-5";
+							amountInput.id = myObj.id + "_amount";
+							amountInput.type = "number";
+							amountInput.min = 0 ;
+							amountInput.max = myObj.available;
+							amountInput.placeholder = "Amount";
+							//onkeyup function for extra controling that the amount is between min and max values
+							amountInput.onkeyup = function(){
+								if(this.value< 0){
+									this.value = 0;
+								}
+								if(this.value > Number(this.max)){
+									this.value = Number(this.max);
+								}
+							}
+							divAmount.appendChild(amountInput);
+						}
 					}
-					var itemDiv = document.createElement("DIV");
-					itemDiv.className = "col-sm-4 padding-left-right-5";
-					rowForThree.appendChild(itemDiv);
-					var itemDivBordered = document.createElement("DIV");
-					itemDivBordered.className = "col-sm-12 col-xs-12 well";
-					itemDivBordered.id = myObj.id;
-					itemDiv.appendChild(itemDivBordered);
-					var labelSaberName = document.createElement("LABEL");
-					labelSaberName.className = "col-sm-12 col-xs-12 text-center padding-left-right-0";
-					labelSaberName.innerHTML = myObj.name;
-					labelSaberName.style.fontWeight = "bold";
-					itemDivBordered.appendChild(labelSaberName);
-					var image = document.createElement("IMG");
-					image.className = "col-sm-12 col-xs-12 padding-left-right-0";
-					image.id = myObj.id + "_img";
-					var picColor = myObj.crystal.color.toLowerCase();
-					if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
-						image.src = "/pictures/light_saber_" + myObj.crystal.color + ".png";
-					}else{
-						image.src = "/pictures/light_saber_unknown.png";
-					}
-					if(document.getElementById("age") != null && document.getElementById("force").innerHTML != "Unlimited" && myObj.crystal.powerUsageMultiplier > 100 ){
-						itemDivBordered.onmouseover = function(){thisIsNot(this.id, false)};
-						itemDivBordered.onmouseout = function(){thisIsNot(this.id, true)};
-					}
-					itemDivBordered.appendChild(image);
-					var labelCrystalName = document.createElement("LABEL");
-					labelCrystalName.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
-					labelCrystalName.innerHTML = "Crystal: ";
-					itemDivBordered.appendChild(labelCrystalName);
-					var labelCrystalNameValue = document.createElement("LABEL");
-					labelCrystalNameValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
-					labelCrystalNameValue.style.fontWeight = "normal";
-					labelCrystalNameValue.innerHTML =myObj.crystal.name;
-					itemDivBordered.appendChild(labelCrystalNameValue);
-					var labelCrystalPlanet = document.createElement("LABEL");
-					labelCrystalPlanet.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
-					labelCrystalPlanet.innerHTML = "Planet: ";
-					itemDivBordered.appendChild(labelCrystalPlanet);
-					var labelCrystalPlanetValue = document.createElement("LABEL");
-					labelCrystalPlanetValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
-					labelCrystalPlanetValue.style.fontWeight = "normal";
-					labelCrystalPlanetValue.innerHTML =myObj.crystal.planet;
-					itemDivBordered.appendChild(labelCrystalPlanetValue);
-					var labelCrystalColor = document.createElement("LABEL");
-					labelCrystalColor.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
-					labelCrystalColor.innerHTML = "Color: ";
-					itemDivBordered.appendChild(labelCrystalColor);
-					var labelCrystalColorValue = document.createElement("LABEL");
-					labelCrystalColorValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
-					labelCrystalColorValue.style.fontWeight = "normal";
-					labelCrystalColorValue.id = myObj.id + "_color";
-					labelCrystalColorValue.innerHTML = myObj.crystal.color;
-					itemDivBordered.appendChild(labelCrystalColorValue);
-					var labelAvailable = document.createElement("LABEL");
-					labelAvailable.className = "col-sm-4 col-xs-4 text-right padding-left-right-0";
-					labelAvailable.innerHTML = "Available: ";
-					itemDivBordered.appendChild(labelAvailable);
-					var labelAvailableValue = document.createElement("LABEL");
-					labelAvailableValue.className = "col-sm-8 col-xs-8 padding-left-right-5";
-					labelAvailableValue.style.fontWeight = "normal";
-					if(myObj.available > 0){
-						labelAvailableValue.innerHTML = "In Stock"
-					}else{
-						labelAvailableValue.innerHTML = "Out Of Stock";
-						labelAvailableValue.style.color = "red";
-					}
-					itemDivBordered.appendChild(labelAvailableValue);
-					
 				}
 			}
 		};
@@ -1008,9 +1074,9 @@
         </li>
         <li id="logoutMenu"><a th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 	    </ul>
+	    <label id="emailLabel" th:inline="text" hidden="true">[[${#httpServletRequest.remoteUser}]]</label>
 	  </div>
 	  <div id="containerUser" class="container-fluid text-center navbar-inverse">
-		<label id="emailLabel" th:inline="text">[[${#httpServletRequest.remoteUser}]]</label>
 		</div>
 	</nav>
 	<div id="container" class="container-fluid">

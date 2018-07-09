@@ -65,7 +65,7 @@ public class CustomerOrderEndpoint {
 			customerOrder.setUser(user);
 			customerOrder.setSaber(saber);
 			customerOrderService.addCustomerOrder(customerOrder);
-			return Response.accepted(createResponseMessage("order succesfull",saber.getName())).status(201).build();	
+			return Response.accepted(createResponseMessage("order succesfull",customerOrder.getOrderAmount() + " x " + saber.getName())).status(201).build();	
 		}else {
 			return Response.status(204).build();
 		}

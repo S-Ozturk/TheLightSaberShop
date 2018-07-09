@@ -27,7 +27,6 @@ public class CustomerOrderService {
 	public CustomerOrder addCustomerOrder(CustomerOrder customerOrder) {
 		CustomerOrder result = customerOrderRepository.save(customerOrder);
 		if(result != null) {
-			System.out.println("working");
 			saberService.getSaberById(result.getSaber().getId()).setAvailable(result.getSaber().getAvailable() - result.getOrderAmount());
 		}
 		return result;

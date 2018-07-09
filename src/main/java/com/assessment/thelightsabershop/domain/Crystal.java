@@ -21,7 +21,7 @@ public class Crystal {
     
     private double powerUsageMultiplier;
     
-    private int stockPrice; 
+    private int stockPrice, calculatedPrice; 
     
     @OneToMany(mappedBy="crystal")
     private List<Saber> sabers;
@@ -80,9 +80,11 @@ public class Crystal {
 		this.stockPrice = stockPrice;
 	}
 
-	//@XmlElement - not needed in assessment
 	public int getCalculatedPrice() {
-		int calculatedPrice = (int)(this.stockPrice * this.powerUsageMultiplier); //For calculating the price of crystal and round it 
 		return calculatedPrice;
+	}
+	
+	public void setCalculatedPrice() {
+		this.calculatedPrice = (int)(this.stockPrice * this.powerUsageMultiplier); //For calculating the price of crystal and round it 
 	}
 }

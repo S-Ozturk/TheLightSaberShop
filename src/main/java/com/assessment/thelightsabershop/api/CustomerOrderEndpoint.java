@@ -13,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.assessment.thelightsabershop.controller.CustomerOrderService;
+import com.assessment.thelightsabershop.controller.SaberService;
 import com.assessment.thelightsabershop.controller.UserService;
 import com.assessment.thelightsabershop.domain.CustomerOrder;
+import com.assessment.thelightsabershop.domain.ResponseMessage;
+import com.assessment.thelightsabershop.domain.Saber;
 import com.assessment.thelightsabershop.domain.User;
 
 
@@ -25,6 +28,12 @@ public class CustomerOrderEndpoint {
 	
 	@Autowired
 	private CustomerOrderService customerOrderService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private SaberService saberService;
 
 	@Path("/saber")
 	@GET
@@ -34,11 +43,12 @@ public class CustomerOrderEndpoint {
 		return Response.ok(customerOrders).build();
 	}
 	
-	/*@Path("/saber")
+	@Path("/saber")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response addCustomerOrder(CustomerOrder customerOrder){
+		customerOrder.setUser(userService.getUserByEmail(customerOrder.getUser().getEmail()));
 		customerOrderService.addCustomerOrder(customerOrder);
 		return Response.accepted(customerOrder.getId() + " successfully added").build();	
 	}
@@ -46,12 +56,27 @@ public class CustomerOrderEndpoint {
 	@Path("/saber/{id}")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.TEXT_PLAIN)
-	public Response addCustomerOrderWithSaberIdVariable(@PathParam("id") int saberId, CustomerOrder customerOrder){
-		User user = userService.getUserByEmail(customerOrder.getUser().getEmail());
-		customerOrder.setUser(user);
-		customerOrderService.addCustomerOrder(customerOrder);
-		return Response.accepted(customerOrder.getId() + " successfully added").build();	
-	}*/
+	@Produces(MediaType.APPLICATION_JSON)
+	public  Response /*ResponseEntity*/ addCustomerOrderWithSaberIdVariable(@PathParam("id") int saberId, CustomerOrder customerOrder){
+		if(saberService.checkSaberById(saberId)) {
+			User user = userService.getUserByEmail(customerOrder.getUser().getEmail());
+			customerOrder.setUser(user);
+			Saber saber = saberService.getSaberById(saberId);
+			customerOrder.setUser(user);
+			customerOrder.setSaber(saber);
+			customerOrderService.addCustomerOrder(customerOrder);
+			return Response.accepted(createResponseMessage("order succesfull",saber.getName())).status(201).build();	
+		}else {
+			return Response.status(204).build();
+		}
+		
+	}
+	
+	private ResponseMessage createResponseMessage(String message, String saberName) {
+		ResponseMessage rm = new ResponseMessage();
+			rm.setMessage(message);
+			rm.setSaberName(saberName);
+		return rm;
+	}
 	
 }

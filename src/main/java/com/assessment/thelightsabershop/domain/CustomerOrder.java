@@ -2,7 +2,6 @@ package com.assessment.thelightsabershop.domain;
 
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,9 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 
 @XmlRootElement
 @Entity
@@ -53,7 +49,9 @@ public class CustomerOrder {
 
 	@XmlElement
 	public User getUser() {
-		return user;
+		User responseUser = user;
+		responseUser.setPassword(null);
+		return responseUser;
 	}
 
 	public void setUser(User user) {

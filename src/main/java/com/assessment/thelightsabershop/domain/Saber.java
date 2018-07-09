@@ -82,6 +82,10 @@ public class Saber {
 	public List<CombatForm> getSaberCombatForms() {
 		return saberCombatForms;
 	}
+	
+	public void lowerAvailable(int amount) {
+		this.available -= amount;
+	}
 
 	public void setSaberCombatForms(List<CombatForm> saberCombatForms) {
 		this.saberCombatForms = saberCombatForms;

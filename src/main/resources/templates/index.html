@@ -788,14 +788,15 @@
     			combatForms = combatForms + ',{"id":'+ checkboxes[i].id +'}';
     		}
 	    }
+	    alert('{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
 		if(name == ""){
 			alert("Force doesn't like this name");
 		} else if (crystal == null){
 			alert("Light sabers gets their power from crystal, without crystal it will be useless");
 		}else if (available == ""){
-			postData205("saber/json",'{"name":"' + name + '", "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
+			postData205("saber/json",'{"name":"' + name + '", "crystal":{"id":' + crystal + '}, "saberCombatForms":[' + combatForms + ']}');
 		}else{
-			postData205("saber/json",'{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
+			postData205("saber/json",'{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "saberCombatForms":[' + combatForms + ']}');
 		}
 	}
 	
@@ -1041,15 +1042,12 @@
 						row.appendChild(columnSaberName);
 						var columnAvailable =  document.createElement("TD");
 						columnAvailable.innerHTML = myObj[x].available;
-						columnAvailable.className = "text-right";
 						row.appendChild(columnAvailable);
 						var columnForce =  document.createElement("TD");
 						columnForce.innerHTML = myObj[x].crystal.powerUsageMultiplier;
-						columnForce.className = "text-right";
 						row.appendChild(columnForce);
 						var columnPrice =  document.createElement("TD");
 						columnPrice.innerHTML = myObj[x].crystal.calculatedPrice;
-						columnPrice.className = "text-right";
 						row.appendChild(columnPrice);
 						var columnCrystalName =  document.createElement("TD");
 						columnCrystalName.innerHTML = myObj[x].crystal.name;
@@ -1098,7 +1096,6 @@
 						row.appendChild(columnSaberName);
 						var columnAmount =  document.createElement("TD");
 						columnAmount.innerHTML = myObj[x].orderAmount;
-						columnAmount.className = "text-right";
 						row.appendChild(columnAmount);
 						var columnUser =  document.createElement("TD");
 						columnUser.innerHTML = myObj[x].user.name + " - " + myObj[x].user.email;

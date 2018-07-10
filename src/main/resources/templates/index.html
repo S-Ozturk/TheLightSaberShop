@@ -182,7 +182,7 @@
 							input.className = "form-control";
 							input.id = id;
 							input.placeholder = "Search For Crystal";
-							input.onkeyup = function(){("crystalTable","crystalSearch")};
+							input.onkeyup = function(){filterListTable("crystalTable","crystalSearch")};
 							divInputGroup.appendChild(input);
 							var divAddon = document.createElement("DIV");
 							divAddon.className = "input-group-addon";
@@ -420,20 +420,20 @@
 				header.innerHTML  = "Light Saber Stock List";
 				var div = document.createElement("DIV");
 				div.className = "container-fluid margin-top-10";
-				container.appendChild(div);				
-				var divSearchDiv = document.createElement("DIV");
-				divSearchDiv.className = "col-sm-4 col-xs-12";
-				var divInputGroup = document.createElement("DIV");
-				divInputGroup.className = "input-group";
+				container.appendChild(div);			
 				var divCombatFormFilter = document.createElement("DIV");
-				divCombatFormFilter.className = "col-sm-3 col-xs-12";
+				divCombatFormFilter.className = "col-sm-3 col-xs-12 padding-left-right-5";
 				div.appendChild(divCombatFormFilter);
 				var combatFilter = document.createElement("SELECT");
 				combatFilter.id = "combatFilter";
 				combatFilter.className = "form-control";
-				combatFilter.onchange = function(){getSaberSorted()};
+				combatFilter.onchange = function(){getStockListSorted()};
 				divCombatFormFilter.appendChild(combatFilter);
 				addCombatFormSelectOptions();
+				var divSearchDiv = document.createElement("DIV");
+				divSearchDiv.className = "col-sm-4 col-xs-12";
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
 				var input = document.createElement("INPUT");
 				input.className = "form-control";
 				input.id = "searchInput";
@@ -449,27 +449,28 @@
 				divSearchDiv.appendChild(divInputGroup);
 				div.appendChild(divSearchDiv);
 				var divSortValue = document.createElement("DIV");
-				divSortValue.className = "col-sm-offset-2 col-sm-3 col-xs-6 padding-left-right-5";
+				divSortValue.className = "col-sm-3 col-xs-6 padding-left-right-5";
 				div.appendChild(divSortValue);
 				var divSortType = document.createElement("DIV");
-				divSortType.className = "col-sm-3 col-xs-6 padding-left-right-5";
+				divSortType.className = "col-sm-2 col-xs-6 padding-left-right-5";
 				div.appendChild(divSortType);
 				var selectSortValue = document.createElement("SELECT");
 				selectSortValue.id = "selectSortValue";
 				selectSortValue.className = "form-control";
-				selectSortValue.onchange = function(){getOrderListSorted()};
+				selectSortValue.onchange = function(){getStockListSorted()};
 				divSortValue.appendChild(selectSortValue);
 				var selectSortType = document.createElement("SELECT");
 				selectSortType.id = "selectSortType";
 				selectSortType.className = "form-control";
-				selectSortType.onchange = function(){getOrderListSorted()};
+				selectSortType.onchange = function(){getStockListSorted()};
 				divSortType.appendChild(selectSortType);
-				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"saberName"},{name:"Amount", value:"orderAmount"}
-				,{name:"User", value:"user"}];
+				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"name"},{name:"Available", value:"available"},
+				{name:"Power Usage", value:"force"},{name:"Price", value:"price"},{name:"Crystal Name", value:"crystalName"},
+				{name:"Crystal Color", value:"color"}];
 				for (x in optionsSortValue){
 					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
 				};
-				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
+				var optionsSortType = [{name:"Asc", value:"Asc"},{name:"Desc", value:"Desc"}];
 				for (x in optionsSortType){
 					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
 				};
@@ -484,7 +485,7 @@
 				tableBody.id = "tBody";
 				stockTable.appendChild(tableBody);
 				divStockTable.appendChild(stockTable);
-				getOrderListSorted();
+				getStockListSorted();
 				break;
 				
 			case"Orders":
@@ -500,14 +501,14 @@
 				div.className = "container-fluid margin-top-10";
 				container.appendChild(div);	
 				var divSearchDiv = document.createElement("DIV");
-				divSearchDiv.className = "col-sm-3 col-xs-12";
+				divSearchDiv.className = "col-sm-4 col-xs-12";
 				var divInputGroup = document.createElement("DIV");
 				divInputGroup.className = "input-group";
 				var input = document.createElement("INPUT");
 				input.className = "form-control";
 				input.id = "searchInput";
-				input.placeholder = "Search For Stocks";
-				input.onkeyup = function(){filterListTable("stockTable","searchInput")};
+				input.placeholder = "Search For Orders";
+				input.onkeyup = function(){filterListTable("orderTable","searchInput")};
 				divInputGroup.appendChild(input);
 				var divAddon = document.createElement("DIV");
 				divAddon.className = "input-group-addon";
@@ -526,12 +527,12 @@
 				var selectSortValue = document.createElement("SELECT");
 				selectSortValue.id = "selectSortValue";
 				selectSortValue.className = "form-control";
-				selectSortValue.onchange = function(){getOrderListSorted()};
+				selectSortValue.onchange = function(){getOrdersSorted()};
 				divSortValue.appendChild(selectSortValue);
 				var selectSortType = document.createElement("SELECT");
 				selectSortType.id = "selectSortType";
 				selectSortType.className = "form-control";
-				selectSortType.onchange = function(){getOrderListSorted()};
+				selectSortType.onchange = function(){getOrdersSorted()};
 				divSortType.appendChild(selectSortType);
 				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"saberName"},{name:"Amount", value:"orderAmount"}
 				,{name:"User", value:"user"}];
@@ -542,18 +543,18 @@
 				for (x in optionsSortType){
 					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
 				};
-				var divStockTable = document.createElement("DIV");
-				divStockTable.id = "divStockTable";
-				divStockTable.className = "container-fluid margin-top-10";
-				container.appendChild(divStockTable);
-				var stockTable =  document.createElement("TABLE");
-				stockTable.id = "stockTable";
-				stockTable.className = "table table-striped table-condensed";
+				var divOrderTable = document.createElement("DIV");
+				divOrderTable.id = "divOrderTable";
+				divOrderTable.className = "container-fluid margin-top-10";
+				container.appendChild(divOrderTable);
+				var orderTable =  document.createElement("TABLE");
+				orderTable.id = "orderTable";
+				orderTable.className = "table table-striped table-condensed";
 				var tableBody =  document.createElement("TBODY");
 				tableBody.id = "tBody";
-				stockTable.appendChild(tableBody);
-				divStockTable.appendChild(stockTable);
-				getOrderListSorted();
+				orderTable.appendChild(tableBody);
+				divOrderTable.appendChild(orderTable);
+				getOrdersSorted();
 				break;
 		}
 	}
@@ -582,7 +583,7 @@
 			for (i = 1; i < tr.length; i++) { //started from 1 because i don't want remove header
 			var controller = 0;
 			td = tr[i].getElementsByTagName("td");
-			for(j = 1; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
+			for(j = 0; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
 				if (td[j]) {
 					if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
 						controller += 1 ;
@@ -877,7 +878,95 @@
 	}
 	
 	//For geting light sabers and after that sorts and filters it
-	function getOrderListSorted() {
+	function getStockListSorted() {
+		var myArr, myObj, x;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = JSON.parse(this.responseText);
+				var combatFilterValue = document.getElementById("combatFilter").value;
+				if(combatFilterValue != "all"){
+					var removeFromArr = [];
+					for(x in myObj){
+						var counter = true;
+						innerLoop:
+						for(y in myObj[x].saberCombatForms){
+							if(myObj[x].saberCombatForms[y].name == combatFilterValue) {
+								counter = false;
+								break innerLoop;
+							}
+						}
+						if(counter) removeFromArr.push(x);
+					}
+					removeFromArr.sort(function(a, b){return b - a});
+					
+					for(x in removeFromArr) {
+						myObj.splice(removeFromArr[x],1);
+					}
+				}
+				var tableBody = document.getElementById("tBody");
+				tableBody.innerHTML="";
+				var rowHeader =  document.createElement("TR");
+				rowHeader.className = "header";
+				var headerTexts = ["Id","Image","Saber Name","Available","Power Usage", "Price","Crystal Name","Crystal Color"];
+				for(x in headerTexts){
+					var header =  document.createElement("TH");
+					header.innerHTML = headerTexts[x];
+					rowHeader.appendChild(header);
+				}
+				tableBody.appendChild(rowHeader);
+				if(myObj.length > 0){
+					myObj = sortArray(myObj);
+					for(x in myObj){
+						var row =  document.createElement("TR");
+						row.id = myObj[x].id + "_row";
+						var columnId =  document.createElement("TD");
+						columnId.innerHTML = myObj[x].id;
+						row.appendChild(columnId);
+						var columnSaberImage =  document.createElement("TD");
+						row.appendChild(columnSaberImage);
+						var saberImage =  document.createElement("IMG");
+						saberImage.height = "20";
+						columnSaberImage.appendChild(saberImage);
+						var picColor = myObj[x].crystal.color.toLowerCase();
+						if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+							saberImage.src = "/pictures/light_saber_" + picColor + ".png";
+						}else{
+							saberImage.src = "/pictures/light_saber_unknown.png";
+						}
+						var columnSaberName =  document.createElement("TD");
+						columnSaberName.innerHTML = myObj[x].name;
+						row.appendChild(columnSaberName);
+						var columnAvailable =  document.createElement("TD");
+						columnAvailable.innerHTML = myObj[x].available;
+						columnAvailable.className = "text-right";
+						row.appendChild(columnAvailable);
+						var columnForce =  document.createElement("TD");
+						columnForce.innerHTML = myObj[x].crystal.powerUsageMultiplier;
+						columnForce.className = "text-right";
+						row.appendChild(columnForce);
+						var columnPrice =  document.createElement("TD");
+						columnPrice.innerHTML = myObj[x].crystal.calculatedPrice;
+						columnPrice.className = "text-right";
+						row.appendChild(columnPrice);
+						var columnCrystalName =  document.createElement("TD");
+						columnCrystalName.innerHTML = myObj[x].crystal.name;
+						row.appendChild(columnCrystalName);
+						var columnCrystalColor =  document.createElement("TD");
+						columnCrystalColor.innerHTML = myObj[x].crystal.color;
+						row.appendChild(columnCrystalColor);
+						tableBody.appendChild(row);
+					}
+				}
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/json");
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
+	//For geting orders and after that sorts it
+	function getOrdersSorted() {
 		var myObj, x;
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
@@ -895,7 +984,7 @@
 				tableBody.appendChild(rowHeader);
 				myObj = JSON.parse(this.responseText);
 				if(myObj.length > 0){
-					myArr = sortArray(myObj);
+					myObj = sortArray(myObj);
 					for(x in myObj){
 						var row =  document.createElement("TR");
 						row.id = myObj[x].id + "_row";
@@ -907,6 +996,7 @@
 						row.appendChild(columnSaberName);
 						var columnAmount =  document.createElement("TD");
 						columnAmount.innerHTML = myObj[x].orderAmount;
+						columnAmount.className = "text-right";
 						row.appendChild(columnAmount);
 						var columnUser =  document.createElement("TD");
 						columnUser.innerHTML = myObj[x].user.name + " - " + myObj[x].user.email;

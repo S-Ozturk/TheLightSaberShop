@@ -144,6 +144,23 @@
 				xhttp.send();
 				break;	
 				
+			case"Add New Crystal":
+				var header = document.createElement("H3");
+				header.id = "header_result";
+				header.className="col-sm-12 text-center";
+				container.appendChild(header);
+				header.innerHTML  = "Add New Crystal Form";
+				var divFormHorizontal = document.createElement("DIV");
+				divFormHorizontal.id = "divFormHorizontal";
+				divFormHorizontal.className = "form-horizontal";
+				container.appendChild(divFormHorizontal);
+				
+				createFormInput("Crystal's Name","name","text");
+				createFormInput("Available","available","number");
+				createFormInput("Search For Crystal","crystalSearch","text");
+				createFormSaveButton("Save New Crystal",saveNewLightSaber);
+				break;
+				
 			case"Add New Light Saber":
 				var header = document.createElement("H3");
 				header.id = "header_result";
@@ -151,7 +168,9 @@
 				container.appendChild(header);
 				header.innerHTML  = "Add New Light Saber Form";
 				var divFormHorizontal = document.createElement("DIV");
+				divFormHorizontal.id = "divFormHorizontal";
 				divFormHorizontal.className = "form-horizontal";
+				container.appendChild(divFormHorizontal);
 				function createFormInput(labelText, id, inputType){
 					var divFormGroup = document.createElement("DIV");
 					divFormGroup.className = "form-group";
@@ -344,28 +363,13 @@
 					xhttp.send();
 					divFormHorizontal.appendChild(divFormGroup);
 				}
-				
-				function createSaveButton(){
-					var divFormGroup = document.createElement("DIV");
-					divFormGroup.className = "form-group";
-					var divSaveButton = document.createElement("DIV");
-					divSaveButton.className = "col-sm-offset-3 col-sm-8";
-					var saveButton = document.createElement("BUTTON");
-					saveButton.className = "btn btn-default btn-lg btn-block";
-					saveButton.onclick = saveNewLightSaber;
-					saveButton.appendChild(document.createTextNode("Save Light Saber"));
-					divSaveButton.appendChild(saveButton);
-					divFormGroup.appendChild(divSaveButton);
-					divFormHorizontal.appendChild(divFormGroup);
-				}
 
 				createFormInput("Light Saber's Name","name","text");
 				createFormInput("Available","available","number");
 				createFormInput("Search For Crystal","crystalSearch","text");
 				createCrystalTable();
 				createCombatForm();
-				createSaveButton();
-				container.appendChild(divFormHorizontal);
+				createFormSaveButton("Save Light Saber",saveNewLightSaber);
 				break;
 				
 			case"Add Light Sabers From XML File":
@@ -405,7 +409,6 @@
 					var event = new Event("getFile");
 					inputFile.dispatchEvent(event);
 					};
-				//button.type = "";
 				buttonDiv.appendChild(button);
 				break;
 				
@@ -559,6 +562,46 @@
 		}
 	}
 	
+	//for creating labels and inputs inside add new forms
+	function createFormInput(labelText, id, inputType){
+		var divFormGroup = document.createElement("DIV");
+		divFormGroup.className = "form-group";
+		var label = document.createElement("LABEL");
+		label.className = "col-sm-3 control-label";
+		label.appendChild(document.createTextNode(labelText));
+		divFormGroup.appendChild(label);
+		var divInput = document.createElement("DIV");
+		divInput.className = "col-sm-8"
+		var input = document.createElement("INPUT");
+		input.className = "form-control";
+		input.id = id + "_input";
+		input.type = inputType;
+		input.placeholder = labelText;
+		if(inputType == "number"){
+			input.min = "0";
+			input.step = "1";
+		}
+		divInput.appendChild(input);
+		divFormGroup.appendChild(divInput);
+		var element = document.getElementById("divFormHorizontal");
+		element.appendChild(divFormGroup);
+	}
+	
+	//For creating save button inside add new forms
+	function createFormSaveButton(text, functionName){
+		var divFormGroup = document.createElement("DIV");
+		divFormGroup.className = "form-group";
+		var divSaveButton = document.createElement("DIV");
+		divSaveButton.className = "col-sm-offset-3 col-sm-8";
+		var saveButton = document.createElement("BUTTON");
+		saveButton.className = "btn btn-default btn-lg btn-block";
+		saveButton.onclick = functionName;
+		saveButton.appendChild(document.createTextNode(text));
+		divSaveButton.appendChild(saveButton);
+		divFormGroup.appendChild(divSaveButton);
+		var element = document.getElementById("divFormHorizontal");
+		element.appendChild(divFormGroup);
+	}
 	
 	//For reading and posting data from XML file
 	function getDataFromXmlFile(){
@@ -1076,6 +1119,7 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 205) {
+				alert(data)
 				switch(api){
 				case "saber/json":
 					var header = document.getElementById("header_result");
@@ -1354,6 +1398,8 @@
         <li id="jediMasterMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jedi Master Menu<span class="caret"></span></a>
           <ul class="dropdown-menu">
+          	<li><a onclick='changeTo("Add New Crystal")'>Add New Crystal</a></li>
+          	<li role="separator" class="divider"></li>
             <li><a onclick='changeTo("Add New Light Saber")'>Add New Light Saber</a></li>
             <li><a onclick='changeTo("Add Light Sabers From XML File")'>Add Light Sabers From XML File</a></li>
             <li role="separator" class="divider"></li>

@@ -67,7 +67,8 @@ public class Crystal {
 	}
 
 	public void setPowerUsageMultiplier(int powerUsageMultiplier) {
-		double powerUsageMultiplierCalculated = powerUsageMultiplier / 100; //For converting data to make calculations easy 20% -> 0.20
+		double powerUsageMultiplierCalculated = (double) powerUsageMultiplier / 100; //For converting data to make calculations easy 20% -> 0.20
+		System.out.println(powerUsageMultiplier + " - " + powerUsageMultiplierCalculated);
 		this.powerUsageMultiplier = powerUsageMultiplierCalculated;
 	}
 

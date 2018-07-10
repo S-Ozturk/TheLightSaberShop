@@ -154,12 +154,15 @@
 				divFormHorizontal.id = "divFormHorizontal";
 				divFormHorizontal.className = "form-horizontal";
 				container.appendChild(divFormHorizontal);
-				
 				createFormInput("Crystal's Name","name","text");
-				createFormInput("Available","available","number");
-				createFormInput("Search For Crystal","crystalSearch","text");
+				createFormInput("Planet","planet","text");
+				createFormInput("Color","color","text");
+				createFormInput("Power Usage","powerUsageMultiplier","number");
+				createFormInput("Stock Price","stockPrice","number");
+
 				createFormSaveButton("Save New Crystal",saveNewLightSaber);
 				break;
+				
 				
 			case"Add New Light Saber":
 				var header = document.createElement("H3");
@@ -171,50 +174,6 @@
 				divFormHorizontal.id = "divFormHorizontal";
 				divFormHorizontal.className = "form-horizontal";
 				container.appendChild(divFormHorizontal);
-				function createFormInput(labelText, id, inputType){
-					var divFormGroup = document.createElement("DIV");
-					divFormGroup.className = "form-group";
-					var label = document.createElement("LABEL");
-					label.className = "col-sm-3 control-label";
-					label.appendChild(document.createTextNode(labelText));
-					divFormGroup.appendChild(label);
-					var divInput = document.createElement("DIV");
-					divInput.className = "col-sm-8";
-					switch(id){
-						default:
-							var input = document.createElement("INPUT");
-							input.className = "form-control";
-							input.id = id + "_input";
-							input.type = inputType;
-							input.placeholder = labelText;
-							if(inputType == "number"){
-								input.min = "0";
-								input.step = "1";
-							}
-							divInput.appendChild(input);
-							break;
-							
-						case "crystalSearch":
-							var divInputGroup = document.createElement("DIV");
-							divInputGroup.className = "input-group";
-							var input = document.createElement("INPUT");
-							input.className = "form-control";
-							input.id = id;
-							input.placeholder = "Search For Crystal";
-							input.onkeyup = function(){filterListTable("crystalTable","crystalSearch")};
-							divInputGroup.appendChild(input);
-							var divAddon = document.createElement("DIV");
-							divAddon.className = "input-group-addon";
-							var searchGlyphicon =  document.createElement("SPAN");
-							searchGlyphicon.className = "glyphicon glyphicon-search";
-							divAddon.appendChild(searchGlyphicon);
-							divInputGroup.appendChild(divAddon);
-							divInput.appendChild(divInputGroup);
-							break;
-					}
-					divFormGroup.appendChild(divInput);
-					divFormHorizontal.appendChild(divFormGroup);
-				}
 				
 				function createCrystalTable(){
 					var divFormGroup = document.createElement("DIV");
@@ -571,17 +530,106 @@
 		label.appendChild(document.createTextNode(labelText));
 		divFormGroup.appendChild(label);
 		var divInput = document.createElement("DIV");
-		divInput.className = "col-sm-8"
-		var input = document.createElement("INPUT");
-		input.className = "form-control";
-		input.id = id + "_input";
-		input.type = inputType;
-		input.placeholder = labelText;
-		if(inputType == "number"){
-			input.min = "0";
-			input.step = "1";
+		divInput.className = "col-sm-8";
+		switch(id){
+			default:
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = id + "_input";
+				input.type = inputType;
+				input.placeholder = labelText;
+				if(inputType == "number"){
+					input.min = "0";
+					input.step = "1";
+				}
+				divInput.appendChild(input);
+				break;
+				
+			case "crystalSearch":
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = id;
+				input.placeholder = "Search For Crystal";
+				input.onkeyup = function(){filterListTable("crystalTable","crystalSearch")};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var searchGlyphicon =  document.createElement("SPAN");
+				searchGlyphicon.className = "glyphicon glyphicon-search";
+				divAddon.appendChild(searchGlyphicon);
+				divInputGroup.appendChild(divAddon);
+				divInput.appendChild(divInputGroup);
+				break;
+			
+			case "powerUsageMultiplier":
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var input = document.createElement("INPUT");
+				input.className = "form-control text-right";
+				input.id = id + "_input";
+				input.placeholder = labelText;
+				input.type = inputType;
+				input.min = "0";
+				input.step = "1";
+				input.onkeyup = function(){document.getElementById("spanPowerUsage").innerHTML = this.value / 100; };
+				input.onchange = function(){document.getElementById("spanPowerUsage").innerHTML = this.value / 100; };
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var span =  document.createElement("SPAN");
+				span.innerHTML = "%";
+				divAddon.appendChild(span);
+				divInputGroup.appendChild(divAddon);
+				divInput.appendChild(divInputGroup);
+				break;
+				
+			case "stockPrice":
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var span =  document.createElement("SPAN");
+				span.innerHTML = "Power Usage:" ;
+				divAddon.appendChild(span);
+				var spanPowerUsage =  document.createElement("SPAN");
+				spanPowerUsage.id = "spanPowerUsage";
+				spanPowerUsage.innerHTML = "0.00";
+				divAddon.appendChild(spanPowerUsage);
+				var span =  document.createElement("SPAN");
+				span.innerHTML = " x" ;
+				divAddon.appendChild(span);
+				divInputGroup.appendChild(divAddon);
+				var input = document.createElement("INPUT");
+				input.className = "form-control text-right";
+				input.id = id + "_input";
+				input.placeholder = labelText;
+				input.type = inputType;
+				input.min = "0";
+				input.step = "1";
+				input.onkeyup = function(){
+					document.getElementById("spanPrice").innerHTML = Math.round(this.value * document.getElementById("spanPowerUsage").innerHTML); 
+				};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var span =  document.createElement("SPAN");
+				span.innerHTML = "= " ;
+				divAddon.appendChild(span);
+				var spanPrice =  document.createElement("SPAN");
+				spanPrice.id = "spanPrice";
+				spanPrice.innerHTML = "0";
+				divAddon.appendChild(spanPrice);
+				var span =  document.createElement("SPAN");
+				span.innerHTML = " Cr (Calculated)" ;
+				divAddon.appendChild(span);
+				divInputGroup.appendChild(divAddon);
+				divInput.appendChild(divInputGroup);
+				break;
+				
+				//createFormInput("Price","stockPrice","number");
 		}
-		divInput.appendChild(input);
 		divFormGroup.appendChild(divInput);
 		var element = document.getElementById("divFormHorizontal");
 		element.appendChild(divFormGroup);

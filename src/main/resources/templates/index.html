@@ -41,6 +41,7 @@
 			case "Light Sabers":
 				var divHeader = document.createElement("DIV");
 				divHeader.className="container-fluid";
+				divHeader.id = "divHeader";
 				container.appendChild(divHeader);
 				var header = document.createElement("H3");
 				header.className="col-sm-12 text-center";
@@ -86,7 +87,7 @@
 				selectSortType.onchange = function(){getSaberSorted()};
 				divSortType.appendChild(selectSortType);
 				var optionsSortValue = [{name:"Name", value:"name"},{name:"Available", value:"available"},{name:"Crystal Name", value:"crystalName"}
-				,{name:"Crystal Planet", value:"planet"},{name:"Color", value:"color"}];
+				,{name:"Crystal Planet", value:"planet"},{name:"Color", value:"color"},{name:"Force", value:"force"},{name:"Price", value:"price"}];
 				for (x in optionsSortValue){
 					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
 				};
@@ -186,7 +187,7 @@
 							input.className = "form-control";
 							input.id = id;
 							input.placeholder = "Search For Crystal";
-							input.onkeyup = function(){filterCrystalListTable()};
+							input.onkeyup = function(){("crystalTable","crystalSearch")};
 							divInputGroup.appendChild(input);
 							var divAddon = document.createElement("DIV");
 							divAddon.className = "input-group-addon";
@@ -412,6 +413,75 @@
 				//button.type = "";
 				buttonDiv.appendChild(button);
 				break;
+				
+			case"Light Saber Stock List":
+				var divHeader = document.createElement("DIV");
+				divHeader.className="container-fluid";
+				divHeader.id = "divHeader";
+				container.appendChild(divHeader);
+				var header = document.createElement("H3");
+				header.className="col-sm-12 text-center";
+				divHeader.appendChild(header);
+				header.innerHTML  = "Light Saber Stock List";
+				var div = document.createElement("DIV");
+				div.className = "container-fluid margin-top-10";
+				container.appendChild(div);				
+				var divSearchDiv = document.createElement("DIV");
+				divSearchDiv.className = "col-sm-4 col-xs-12";
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = "searchInput";
+				input.placeholder = "Search For Stocks";
+				input.onkeyup = function(){filterListTable("stockTable","searchInput")};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var searchGlyphicon =  document.createElement("SPAN");
+				searchGlyphicon.className = "glyphicon glyphicon-search";
+				divAddon.appendChild(searchGlyphicon);
+				divInputGroup.appendChild(divAddon);
+				divSearchDiv.appendChild(divInputGroup);
+				div.appendChild(divSearchDiv);
+				var divSortValue = document.createElement("DIV");
+				divSortValue.className = "col-sm-offset-2 col-sm-3 col-xs-6 padding-left-right-5";
+				div.appendChild(divSortValue);
+				var divSortType = document.createElement("DIV");
+				divSortType.className = "col-sm-3 col-xs-6 padding-left-right-5";
+				div.appendChild(divSortType);
+				var selectSortValue = document.createElement("SELECT");
+				selectSortValue.id = "selectSortValue";
+				selectSortValue.className = "form-control";
+				selectSortValue.onchange = function(){getOrderListSorted()};
+				divSortValue.appendChild(selectSortValue);
+				var selectSortType = document.createElement("SELECT");
+				selectSortType.id = "selectSortType";
+				selectSortType.className = "form-control";
+				selectSortType.onchange = function(){getOrderListSorted()};
+				divSortType.appendChild(selectSortType);
+				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"saberName"},{name:"Amount", value:"orderAmount"}
+				,{name:"User", value:"user"}];
+				for (x in optionsSortValue){
+					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
+				};
+				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
+				for (x in optionsSortType){
+					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
+				};
+				var divStockTable = document.createElement("DIV");
+				divStockTable.id = "divStockTable";
+				divStockTable.className = "container-fluid margin-top-10";
+				container.appendChild(divStockTable);
+				var stockTable =  document.createElement("TABLE");
+				stockTable.id = "stockTable";
+				stockTable.className = "table table-striped table-condensed";
+				var tableBody =  document.createElement("TBODY");
+				tableBody.id = "tBody";
+				stockTable.appendChild(tableBody);
+				divStockTable.appendChild(stockTable);
+				getOrderListSorted();
+				break;
 		}
 	}
 	
@@ -428,12 +498,12 @@
 	}
 	
 	
-	// This function is for filtering the crytals table as the input in the searchbox
-	function filterCrystalListTable() {
+	// This function is for filtering the tables as the input in the searchbox
+	function filterListTable(tableId, searchId) {
 		var input, filter, table, tr, td, i, x;
-		input = document.getElementById("crystalSearch");
+		input = document.getElementById(searchId);
 		filter = input.value.toUpperCase();
-		table = document.getElementById("crystalTable");
+		table = document.getElementById(tableId);
 		tr = table.getElementsByTagName("tr");
 		
 			for (i = 1; i < tr.length; i++) { //started from 1 because i don't want remove header
@@ -583,7 +653,7 @@
 				var container = document.getElementById("divSabers");
 				container.innerHTML="";
 				if(myArr.length > 0){
-					myArr = sortSaberArray(myArr);
+					myArr = sortArray(myArr);
 					for(x in myArr){
 						myObj = myArr[x];
 						if((x % 3) == 0){
@@ -729,6 +799,51 @@
 			}
 		};
 		xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/json");
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
+	//For geting light sabers and after that sorts and filters it
+	function getOrderListSorted() {
+		var myObj, x;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				var tableBody = document.getElementById("tBody");
+				tableBody.innerHTML="";
+				var rowHeader =  document.createElement("TR");
+				rowHeader.className = "header";
+				var headerTexts = ["Order Id","Saber Name","Amount","Ordered User"];
+				for(x in headerTexts){
+					var header =  document.createElement("TH");
+					header.innerHTML = headerTexts[x];
+					rowHeader.appendChild(header);
+				}
+				tableBody.appendChild(rowHeader);
+				myObj = JSON.parse(this.responseText);
+				if(myObj.length > 0){
+					myArr = sortArray(myObj);
+					for(x in myObj){
+						var row =  document.createElement("TR");
+						row.id = myObj[x].id + "_row";
+						var columnId =  document.createElement("TD");
+						columnId.innerHTML = myObj[x].id;
+						row.appendChild(columnId);
+						var columnSaberName =  document.createElement("TD");
+						columnSaberName.innerHTML = myObj[x].saber.name;
+						row.appendChild(columnSaberName);
+						var columnAmount =  document.createElement("TD");
+						columnAmount.innerHTML = myObj[x].orderAmount;
+						row.appendChild(columnAmount);
+						var columnUser =  document.createElement("TD");
+						columnUser.innerHTML = myObj[x].user.name + " - " + myObj[x].user.email;
+						row.appendChild(columnUser);
+						tableBody.appendChild(row);
+					}
+				}
+			}
+		}
+		xhttp.open("GET", "http://localhost:8082/Jedisabershop/order/saber");
 		xhttp.setRequestHeader("Content-type", "application/json");
 		xhttp.send();
 	}
@@ -945,7 +1060,7 @@
 	};
 	
 	//Sorting function for Saber List
-	function sortSaberArray(array) {
+	function sortArray(array) {
 		var sort,subKey ="";
 		var sortType = document.getElementById("selectSortType").value;
 		if(sortType == "Asc"){
@@ -955,6 +1070,7 @@
 		}	
 		var key = document.getElementById("selectSortValue").value;
 		switch(key){
+		//cases for add saber page
 		case "crystalName":
 			key = "crystal";
 			subKey = "name";
@@ -967,9 +1083,26 @@
 			subKey = key;
 			key = "crystal";
 			break;
+		case "force":
+			subKey = "powerUsageMultiplier";
+			key = "crystal";
+			break;
+		case "price":
+			subKey = "calculatedPrice";
+			key = "crystal";
+			break;
+		//cases for order list page
+		case "saberName":
+			key = "saber";
+			subKey= "name";
+			break;
+		case "user":
+			key = "user";
+			subKey= "name";
+			break;
 		}
-		if(typeof array[0][key] == "string" || typeof array[0][key][subKey] == "string" ){
-			if(subKey != ""){
+		if(subKey != ""){
+			if(typeof array[0][key][subKey] == "string" ){
 				array.sort(function(a, b) {
 			        if (a[key][subKey].toLowerCase() < b[key][subKey].toLowerCase()){
 			            return sort ? 1 : -1;
@@ -981,7 +1114,20 @@
 			    });
 			    return array;
 			}else{
-			    array.sort(function(a, b) {
+				array.sort(function(a, b) {
+			        if (a[key][subKey] < b[key][subKey]){
+			            return sort ? 1 : -1;
+			        }
+			        if (a[key][subKey] > b[key][subKey]){
+			            return sort ? -1 : 1;
+			        }
+			        return 0;
+			    });
+			    return array;			
+			}
+		}else{
+			if(typeof array[0][key] == "string"){
+				array.sort(function(a, b) {
 			        if (a[key].toLowerCase() < b[key].toLowerCase()){
 			            return sort ? 1 : -1;
 			        }
@@ -991,21 +1137,19 @@
 			        return 0;
 			    });
 			    return array;
+			}else{
+				array.sort(function(a, b) {
+			        if (a[key] < b[key]){
+			            return sort ? 1 : -1;
+			        }
+			        if (a[key] > b[key]){
+			            return sort ? -1 : 1;
+			        }
+			        return 0;
+			    });
+			    return array;
 			}
-		}else{
-		    array.sort(function(a, b) {
-		        if (a[key] < b[key]){
-		            return sort ? 1 : -1;
-		        }
-		        if (a[key] > b[key]){
-		            return sort ? -1 : 1;
-		        }
-		        return 0;
-		    });
-		    return array;
-		}
-
-		
+		}		
 	};
 	
 	//adding option to select function
@@ -1041,7 +1185,7 @@
             <li><a onclick='changeTo("Add New Light Saber")'>Add New Light Saber</a></li>
             <li><a onclick='changeTo("Add Light Sabers From XML File")'>Add Light Sabers From XML File</a></li>
             <li role="separator" class="divider"></li>
-            <li><a onclick='changeTo("Stock List")'>Stock List</a></li>
+            <li><a onclick='changeTo("Light Saber Stock List")'>Stock List</a></li>
           </ul>
         </li>
 	    </ul>

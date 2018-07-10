@@ -64,12 +64,7 @@
 				combatFilter.className = "form-control";
 				combatFilter.onchange = function(){getSaberSorted()};
 				divCombatFormFilter.appendChild(combatFilter);
-				var optionsCombatForm = [{name:"All Combat Forms", value:"all"},{name:"Shii-Cho", value:"Shii-Cho"},{name:"Makashi", value:"Makashi"},
-					{name:"Soresu", value:"Soresu"},{name:"Ataru", value:"Ataru"},{name:"Shien (Djem So)", value:"Shien (Djem So)"},
-					{name:"Niman", value:"Niman"},{name:"Juyo (Vaapad)", value:"Juyo (Vaapad)"}];
-				for (x in optionsCombatForm){
-					addOption("combatFilter", optionsCombatForm[x].name,  optionsCombatForm[x].value);
-				};
+				addCombatFormSelectOptions();
 				var divSortValue = document.createElement("DIV");
 				divSortValue.className = "col-sm-offset-2 col-sm-3";
 				div.appendChild(divSortValue);
@@ -428,6 +423,84 @@
 				container.appendChild(div);				
 				var divSearchDiv = document.createElement("DIV");
 				divSearchDiv.className = "col-sm-4 col-xs-12";
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var divCombatFormFilter = document.createElement("DIV");
+				divCombatFormFilter.className = "col-sm-3 col-xs-12";
+				div.appendChild(divCombatFormFilter);
+				var combatFilter = document.createElement("SELECT");
+				combatFilter.id = "combatFilter";
+				combatFilter.className = "form-control";
+				combatFilter.onchange = function(){getSaberSorted()};
+				divCombatFormFilter.appendChild(combatFilter);
+				addCombatFormSelectOptions();
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = "searchInput";
+				input.placeholder = "Search For Stocks";
+				input.onkeyup = function(){filterListTable("stockTable","searchInput")};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var searchGlyphicon =  document.createElement("SPAN");
+				searchGlyphicon.className = "glyphicon glyphicon-search";
+				divAddon.appendChild(searchGlyphicon);
+				divInputGroup.appendChild(divAddon);
+				divSearchDiv.appendChild(divInputGroup);
+				div.appendChild(divSearchDiv);
+				var divSortValue = document.createElement("DIV");
+				divSortValue.className = "col-sm-offset-2 col-sm-3 col-xs-6 padding-left-right-5";
+				div.appendChild(divSortValue);
+				var divSortType = document.createElement("DIV");
+				divSortType.className = "col-sm-3 col-xs-6 padding-left-right-5";
+				div.appendChild(divSortType);
+				var selectSortValue = document.createElement("SELECT");
+				selectSortValue.id = "selectSortValue";
+				selectSortValue.className = "form-control";
+				selectSortValue.onchange = function(){getOrderListSorted()};
+				divSortValue.appendChild(selectSortValue);
+				var selectSortType = document.createElement("SELECT");
+				selectSortType.id = "selectSortType";
+				selectSortType.className = "form-control";
+				selectSortType.onchange = function(){getOrderListSorted()};
+				divSortType.appendChild(selectSortType);
+				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"saberName"},{name:"Amount", value:"orderAmount"}
+				,{name:"User", value:"user"}];
+				for (x in optionsSortValue){
+					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
+				};
+				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
+				for (x in optionsSortType){
+					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
+				};
+				var divStockTable = document.createElement("DIV");
+				divStockTable.id = "divStockTable";
+				divStockTable.className = "container-fluid margin-top-10";
+				container.appendChild(divStockTable);
+				var stockTable =  document.createElement("TABLE");
+				stockTable.id = "stockTable";
+				stockTable.className = "table table-striped table-condensed";
+				var tableBody =  document.createElement("TBODY");
+				tableBody.id = "tBody";
+				stockTable.appendChild(tableBody);
+				divStockTable.appendChild(stockTable);
+				getOrderListSorted();
+				break;
+				
+			case"Orders":
+				var divHeader = document.createElement("DIV");
+				divHeader.className="container-fluid";
+				divHeader.id = "divHeader";
+				container.appendChild(divHeader);
+				var header = document.createElement("H3");
+				header.className="col-sm-12 text-center";
+				divHeader.appendChild(header);
+				header.innerHTML  = "Light Saber Orders";
+				var div = document.createElement("DIV");
+				div.className = "container-fluid margin-top-10";
+				container.appendChild(div);	
+				var divSearchDiv = document.createElement("DIV");
+				divSearchDiv.className = "col-sm-3 col-xs-12";
 				var divInputGroup = document.createElement("DIV");
 				divInputGroup.className = "input-group";
 				var input = document.createElement("INPUT");
@@ -1161,6 +1234,15 @@
 		element.appendChild(option);
 	};
 	
+	function addCombatFormSelectOptions(){
+		var optionsCombatForm = [{name:"All Combat Forms", value:"all"},{name:"Shii-Cho", value:"Shii-Cho"},{name:"Makashi", value:"Makashi"},
+			{name:"Soresu", value:"Soresu"},{name:"Ataru", value:"Ataru"},{name:"Shien (Djem So)", value:"Shien (Djem So)"},
+			{name:"Niman", value:"Niman"},{name:"Juyo (Vaapad)", value:"Juyo (Vaapad)"}];
+		for (x in optionsCombatForm){
+			addOption("combatFilter", optionsCombatForm[x].name,  optionsCombatForm[x].value);
+		};
+	}
+	
 	//---------------------------------------------//
 	//     R E U S A B L E   C O D E S   E N D     //
 	//---------------------------------------------//
@@ -1186,6 +1268,8 @@
             <li><a onclick='changeTo("Add Light Sabers From XML File")'>Add Light Sabers From XML File</a></li>
             <li role="separator" class="divider"></li>
             <li><a onclick='changeTo("Light Saber Stock List")'>Stock List</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a onclick='changeTo("Orders")'>Orders</a></li>
           </ul>
         </li>
 	    </ul>

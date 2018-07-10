@@ -160,7 +160,7 @@
 				createFormInput("Power Usage","powerUsageMultiplier","number");
 				createFormInput("Stock Price","stockPrice","number");
 
-				createFormSaveButton("Save New Crystal",saveNewLightSaber);
+				createFormSaveButton("Save New Crystal",saveNewCrystal);
 				break;
 				
 				
@@ -756,6 +756,17 @@
 		xhttp.send(data);
 	}
 	
+	function saveNewCrystal(){
+		var name, planet, color, powerUsage, stockPrice = "";
+		name = document.getElementById("name_input").value;
+		planet = document.getElementById("planet_input").value;
+		color = document.getElementById("color_input").value;
+		powerUsage = document.getElementById("powerUsageMultiplier_input").value;
+		stockPrice = document.getElementById("stockPrice_input").value;
+		alert('{"name":"' + name + '","planet":"' + planet + '","color":"' + color + '","powerUsageMultiplier":' + powerUsage + ',"stockPrice":' + stockPrice +'}');
+		postData("crystal/add",'{"name":"' + name + '","planet":"' + planet + '","color":"' + color + '","powerUsageMultiplier":' + powerUsage + ',"stockPrice":' + stockPrice +'}');
+	}
+	
 	function saveNewLightSaber(){
 		var name, planet, available, crystal, combatForms = "";
 		name = document.getElementById("name_input").value;
@@ -1167,7 +1178,6 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 205) {
-				alert(data)
 				switch(api){
 				case "saber/json":
 					var header = document.getElementById("header_result");
@@ -1220,7 +1230,15 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 202) {
-				document.getElementById("Container").innerHTML = this.responseText+" Item Added";
+				switch(api){
+				case "crystal/add":
+					var header = document.getElementById("header_result");
+					header.innerHTML = "Force Accepted This " + this.responseText;
+					var span = document.createElement("SPAN");
+					span.className = "glyphicon glyphicon-ok";
+					header.appendChild(span);
+					break;
+				}
 			}
 		};
 		xhttp.open("POST", "http://localhost:8082/Jedisabershop/" + api, true);

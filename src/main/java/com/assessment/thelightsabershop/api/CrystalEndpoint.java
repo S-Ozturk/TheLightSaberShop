@@ -45,7 +45,7 @@ public class CrystalEndpoint {
 	@Produces(MediaType.TEXT_PLAIN)
 	public Response addCrystal(Crystal crystal){
 		crystalService.addCrystal(crystal);
-		return Response.accepted(crystal.getName() + " successfully added").build();	
+		return Response.accepted(crystal.getName()).build();	
 	}
 	
 }

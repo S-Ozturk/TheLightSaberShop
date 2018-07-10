@@ -67,7 +67,7 @@ public class Crystal {
 	}
 
 	public void setPowerUsageMultiplier(int powerUsageMultiplier) {
-		double powerUsageMultiplierCalculated = powerUsageMultiplier / 100; //For converting data to make calculations easy 20% -> 0.20
+		double powerUsageMultiplierCalculated = (double) powerUsageMultiplier / 100; //For converting data to make calculations easy 20% -> 0.20
 		this.powerUsageMultiplier = powerUsageMultiplierCalculated;
 	}
 
@@ -81,10 +81,7 @@ public class Crystal {
 	}
 
 	public int getCalculatedPrice() {
-		return calculatedPrice;
+		return (int)(this.stockPrice * this.powerUsageMultiplier);
 	}
 	
-	public void setCalculatedPrice() {
-		this.calculatedPrice = (int)(this.stockPrice * this.powerUsageMultiplier); //For calculating the price of crystal and round it 
-	}
 }

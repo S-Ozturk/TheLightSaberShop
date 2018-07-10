@@ -64,12 +64,7 @@
 				combatFilter.className = "form-control";
 				combatFilter.onchange = function(){getSaberSorted()};
 				divCombatFormFilter.appendChild(combatFilter);
-				var optionsCombatForm = [{name:"All Combat Forms", value:"all"},{name:"Shii-Cho", value:"Shii-Cho"},{name:"Makashi", value:"Makashi"},
-					{name:"Soresu", value:"Soresu"},{name:"Ataru", value:"Ataru"},{name:"Shien (Djem So)", value:"Shien (Djem So)"},
-					{name:"Niman", value:"Niman"},{name:"Juyo (Vaapad)", value:"Juyo (Vaapad)"}];
-				for (x in optionsCombatForm){
-					addOption("combatFilter", optionsCombatForm[x].name,  optionsCombatForm[x].value);
-				};
+				addCombatFormSelectOptions();
 				var divSortValue = document.createElement("DIV");
 				divSortValue.className = "col-sm-offset-2 col-sm-3";
 				div.appendChild(divSortValue);
@@ -149,6 +144,26 @@
 				xhttp.send();
 				break;	
 				
+			case"Add New Crystal":
+				var header = document.createElement("H3");
+				header.id = "header_result";
+				header.className="col-sm-12 text-center";
+				container.appendChild(header);
+				header.innerHTML  = "Add New Crystal Form";
+				var divFormHorizontal = document.createElement("DIV");
+				divFormHorizontal.id = "divFormHorizontal";
+				divFormHorizontal.className = "form-horizontal";
+				container.appendChild(divFormHorizontal);
+				createFormInput("Crystal's Name","name","text");
+				createFormInput("Planet","planet","text");
+				createFormInput("Color","color","text");
+				createFormInput("Power Usage","powerUsageMultiplier","number");
+				createFormInput("Stock Price","stockPrice","number");
+
+				createFormSaveButton("Save New Crystal",saveNewCrystal);
+				break;
+				
+				
 			case"Add New Light Saber":
 				var header = document.createElement("H3");
 				header.id = "header_result";
@@ -156,51 +171,9 @@
 				container.appendChild(header);
 				header.innerHTML  = "Add New Light Saber Form";
 				var divFormHorizontal = document.createElement("DIV");
+				divFormHorizontal.id = "divFormHorizontal";
 				divFormHorizontal.className = "form-horizontal";
-				function createFormInput(labelText, id, inputType){
-					var divFormGroup = document.createElement("DIV");
-					divFormGroup.className = "form-group";
-					var label = document.createElement("LABEL");
-					label.className = "col-sm-3 control-label";
-					label.appendChild(document.createTextNode(labelText));
-					divFormGroup.appendChild(label);
-					var divInput = document.createElement("DIV");
-					divInput.className = "col-sm-8";
-					switch(id){
-						default:
-							var input = document.createElement("INPUT");
-							input.className = "form-control";
-							input.id = id + "_input";
-							input.type = inputType;
-							input.placeholder = labelText;
-							if(inputType == "number"){
-								input.min = "0";
-								input.step = "1";
-							}
-							divInput.appendChild(input);
-							break;
-							
-						case "crystalSearch":
-							var divInputGroup = document.createElement("DIV");
-							divInputGroup.className = "input-group";
-							var input = document.createElement("INPUT");
-							input.className = "form-control";
-							input.id = id;
-							input.placeholder = "Search For Crystal";
-							input.onkeyup = function(){("crystalTable","crystalSearch")};
-							divInputGroup.appendChild(input);
-							var divAddon = document.createElement("DIV");
-							divAddon.className = "input-group-addon";
-							var searchGlyphicon =  document.createElement("SPAN");
-							searchGlyphicon.className = "glyphicon glyphicon-search";
-							divAddon.appendChild(searchGlyphicon);
-							divInputGroup.appendChild(divAddon);
-							divInput.appendChild(divInputGroup);
-							break;
-					}
-					divFormGroup.appendChild(divInput);
-					divFormHorizontal.appendChild(divFormGroup);
-				}
+				container.appendChild(divFormHorizontal);
 				
 				function createCrystalTable(){
 					var divFormGroup = document.createElement("DIV");
@@ -349,28 +322,13 @@
 					xhttp.send();
 					divFormHorizontal.appendChild(divFormGroup);
 				}
-				
-				function createSaveButton(){
-					var divFormGroup = document.createElement("DIV");
-					divFormGroup.className = "form-group";
-					var divSaveButton = document.createElement("DIV");
-					divSaveButton.className = "col-sm-offset-3 col-sm-8";
-					var saveButton = document.createElement("BUTTON");
-					saveButton.className = "btn btn-default btn-lg btn-block";
-					saveButton.onclick = saveNewLightSaber;
-					saveButton.appendChild(document.createTextNode("Save Light Saber"));
-					divSaveButton.appendChild(saveButton);
-					divFormGroup.appendChild(divSaveButton);
-					divFormHorizontal.appendChild(divFormGroup);
-				}
 
 				createFormInput("Light Saber's Name","name","text");
 				createFormInput("Available","available","number");
 				createFormInput("Search For Crystal","crystalSearch","text");
 				createCrystalTable();
 				createCombatForm();
-				createSaveButton();
-				container.appendChild(divFormHorizontal);
+				createFormSaveButton("Save Light Saber",saveNewLightSaber);
 				break;
 				
 			case"Add Light Sabers From XML File":
@@ -410,7 +368,6 @@
 					var event = new Event("getFile");
 					inputFile.dispatchEvent(event);
 					};
-				//button.type = "";
 				buttonDiv.appendChild(button);
 				break;
 				
@@ -425,7 +382,16 @@
 				header.innerHTML  = "Light Saber Stock List";
 				var div = document.createElement("DIV");
 				div.className = "container-fluid margin-top-10";
-				container.appendChild(div);				
+				container.appendChild(div);			
+				var divCombatFormFilter = document.createElement("DIV");
+				divCombatFormFilter.className = "col-sm-3 col-xs-12 padding-left-right-5";
+				div.appendChild(divCombatFormFilter);
+				var combatFilter = document.createElement("SELECT");
+				combatFilter.id = "combatFilter";
+				combatFilter.className = "form-control";
+				combatFilter.onchange = function(){getStockListSorted()};
+				divCombatFormFilter.appendChild(combatFilter);
+				addCombatFormSelectOptions();
 				var divSearchDiv = document.createElement("DIV");
 				divSearchDiv.className = "col-sm-4 col-xs-12";
 				var divInputGroup = document.createElement("DIV");
@@ -445,27 +411,28 @@
 				divSearchDiv.appendChild(divInputGroup);
 				div.appendChild(divSearchDiv);
 				var divSortValue = document.createElement("DIV");
-				divSortValue.className = "col-sm-offset-2 col-sm-3 col-xs-6 padding-left-right-5";
+				divSortValue.className = "col-sm-3 col-xs-6 padding-left-right-5";
 				div.appendChild(divSortValue);
 				var divSortType = document.createElement("DIV");
-				divSortType.className = "col-sm-3 col-xs-6 padding-left-right-5";
+				divSortType.className = "col-sm-2 col-xs-6 padding-left-right-5";
 				div.appendChild(divSortType);
 				var selectSortValue = document.createElement("SELECT");
 				selectSortValue.id = "selectSortValue";
 				selectSortValue.className = "form-control";
-				selectSortValue.onchange = function(){getOrderListSorted()};
+				selectSortValue.onchange = function(){getStockListSorted()};
 				divSortValue.appendChild(selectSortValue);
 				var selectSortType = document.createElement("SELECT");
 				selectSortType.id = "selectSortType";
 				selectSortType.className = "form-control";
-				selectSortType.onchange = function(){getOrderListSorted()};
+				selectSortType.onchange = function(){getStockListSorted()};
 				divSortType.appendChild(selectSortType);
-				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"saberName"},{name:"Amount", value:"orderAmount"}
-				,{name:"User", value:"user"}];
+				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"name"},{name:"Available", value:"available"},
+				{name:"Power Usage", value:"force"},{name:"Price", value:"price"},{name:"Crystal Name", value:"crystalName"},
+				{name:"Crystal Color", value:"color"}];
 				for (x in optionsSortValue){
 					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
 				};
-				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
+				var optionsSortType = [{name:"Asc", value:"Asc"},{name:"Desc", value:"Desc"}];
 				for (x in optionsSortType){
 					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
 				};
@@ -480,11 +447,209 @@
 				tableBody.id = "tBody";
 				stockTable.appendChild(tableBody);
 				divStockTable.appendChild(stockTable);
-				getOrderListSorted();
+				getStockListSorted();
+				break;
+				
+			case"Orders":
+				var divHeader = document.createElement("DIV");
+				divHeader.className="container-fluid";
+				divHeader.id = "divHeader";
+				container.appendChild(divHeader);
+				var header = document.createElement("H3");
+				header.className="col-sm-12 text-center";
+				divHeader.appendChild(header);
+				header.innerHTML  = "Light Saber Orders";
+				var div = document.createElement("DIV");
+				div.className = "container-fluid margin-top-10";
+				container.appendChild(div);	
+				var divSearchDiv = document.createElement("DIV");
+				divSearchDiv.className = "col-sm-4 col-xs-12";
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = "searchInput";
+				input.placeholder = "Search For Orders";
+				input.onkeyup = function(){filterListTable("orderTable","searchInput")};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var searchGlyphicon =  document.createElement("SPAN");
+				searchGlyphicon.className = "glyphicon glyphicon-search";
+				divAddon.appendChild(searchGlyphicon);
+				divInputGroup.appendChild(divAddon);
+				divSearchDiv.appendChild(divInputGroup);
+				div.appendChild(divSearchDiv);
+				var divSortValue = document.createElement("DIV");
+				divSortValue.className = "col-sm-offset-2 col-sm-3 col-xs-6 padding-left-right-5";
+				div.appendChild(divSortValue);
+				var divSortType = document.createElement("DIV");
+				divSortType.className = "col-sm-3 col-xs-6 padding-left-right-5";
+				div.appendChild(divSortType);
+				var selectSortValue = document.createElement("SELECT");
+				selectSortValue.id = "selectSortValue";
+				selectSortValue.className = "form-control";
+				selectSortValue.onchange = function(){getOrdersSorted()};
+				divSortValue.appendChild(selectSortValue);
+				var selectSortType = document.createElement("SELECT");
+				selectSortType.id = "selectSortType";
+				selectSortType.className = "form-control";
+				selectSortType.onchange = function(){getOrdersSorted()};
+				divSortType.appendChild(selectSortType);
+				var optionsSortValue = [{name:"Order Id", value:"id"},{name:"Saber Name", value:"saberName"},{name:"Amount", value:"orderAmount"}
+				,{name:"User", value:"user"}];
+				for (x in optionsSortValue){
+					addOption("selectSortValue", optionsSortValue[x].name,  optionsSortValue[x].value);
+				};
+				var optionsSortType = [{name:"Ascending", value:"Asc"},{name:"Descending", value:"Desc"}];
+				for (x in optionsSortType){
+					addOption("selectSortType", optionsSortType[x].name,  optionsSortType[x].value);
+				};
+				var divOrderTable = document.createElement("DIV");
+				divOrderTable.id = "divOrderTable";
+				divOrderTable.className = "container-fluid margin-top-10";
+				container.appendChild(divOrderTable);
+				var orderTable =  document.createElement("TABLE");
+				orderTable.id = "orderTable";
+				orderTable.className = "table table-striped table-condensed";
+				var tableBody =  document.createElement("TBODY");
+				tableBody.id = "tBody";
+				orderTable.appendChild(tableBody);
+				divOrderTable.appendChild(orderTable);
+				getOrdersSorted();
 				break;
 		}
 	}
 	
+	//for creating labels and inputs inside add new forms
+	function createFormInput(labelText, id, inputType){
+		var divFormGroup = document.createElement("DIV");
+		divFormGroup.className = "form-group";
+		var label = document.createElement("LABEL");
+		label.className = "col-sm-3 control-label";
+		label.appendChild(document.createTextNode(labelText));
+		divFormGroup.appendChild(label);
+		var divInput = document.createElement("DIV");
+		divInput.className = "col-sm-8";
+		switch(id){
+			default:
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = id + "_input";
+				input.type = inputType;
+				input.placeholder = labelText;
+				if(inputType == "number"){
+					input.min = "0";
+					input.step = "1";
+				}
+				divInput.appendChild(input);
+				break;
+				
+			case "crystalSearch":
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var input = document.createElement("INPUT");
+				input.className = "form-control";
+				input.id = id;
+				input.placeholder = "Search For Crystal";
+				input.onkeyup = function(){filterListTable("crystalTable","crystalSearch")};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var searchGlyphicon =  document.createElement("SPAN");
+				searchGlyphicon.className = "glyphicon glyphicon-search";
+				divAddon.appendChild(searchGlyphicon);
+				divInputGroup.appendChild(divAddon);
+				divInput.appendChild(divInputGroup);
+				break;
+			
+			case "powerUsageMultiplier":
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var input = document.createElement("INPUT");
+				input.className = "form-control text-right";
+				input.id = id + "_input";
+				input.placeholder = labelText;
+				input.type = inputType;
+				input.min = "0";
+				input.step = "1";
+				input.onkeyup = function(){document.getElementById("spanPowerUsage").innerHTML = this.value / 100; };
+				input.onchange = function(){document.getElementById("spanPowerUsage").innerHTML = this.value / 100; };
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var span =  document.createElement("SPAN");
+				span.innerHTML = "%";
+				divAddon.appendChild(span);
+				divInputGroup.appendChild(divAddon);
+				divInput.appendChild(divInputGroup);
+				break;
+				
+			case "stockPrice":
+				var divInputGroup = document.createElement("DIV");
+				divInputGroup.className = "input-group";
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var span =  document.createElement("SPAN");
+				span.innerHTML = "Power Usage:" ;
+				divAddon.appendChild(span);
+				var spanPowerUsage =  document.createElement("SPAN");
+				spanPowerUsage.id = "spanPowerUsage";
+				spanPowerUsage.innerHTML = "0.00";
+				divAddon.appendChild(spanPowerUsage);
+				var span =  document.createElement("SPAN");
+				span.innerHTML = " x" ;
+				divAddon.appendChild(span);
+				divInputGroup.appendChild(divAddon);
+				var input = document.createElement("INPUT");
+				input.className = "form-control text-right";
+				input.id = id + "_input";
+				input.placeholder = labelText;
+				input.type = inputType;
+				input.min = "0";
+				input.step = "1";
+				input.onkeyup = function(){
+					document.getElementById("spanPrice").innerHTML = Math.round(this.value * document.getElementById("spanPowerUsage").innerHTML); 
+				};
+				divInputGroup.appendChild(input);
+				var divAddon = document.createElement("DIV");
+				divAddon.className = "input-group-addon";
+				var span =  document.createElement("SPAN");
+				span.innerHTML = "= " ;
+				divAddon.appendChild(span);
+				var spanPrice =  document.createElement("SPAN");
+				spanPrice.id = "spanPrice";
+				spanPrice.innerHTML = "0";
+				divAddon.appendChild(spanPrice);
+				var span =  document.createElement("SPAN");
+				span.innerHTML = " Cr (Calculated)" ;
+				divAddon.appendChild(span);
+				divInputGroup.appendChild(divAddon);
+				divInput.appendChild(divInputGroup);
+				break;
+				
+				//createFormInput("Price","stockPrice","number");
+		}
+		divFormGroup.appendChild(divInput);
+		var element = document.getElementById("divFormHorizontal");
+		element.appendChild(divFormGroup);
+	}
+	
+	//For creating save button inside add new forms
+	function createFormSaveButton(text, functionName){
+		var divFormGroup = document.createElement("DIV");
+		divFormGroup.className = "form-group";
+		var divSaveButton = document.createElement("DIV");
+		divSaveButton.className = "col-sm-offset-3 col-sm-8";
+		var saveButton = document.createElement("BUTTON");
+		saveButton.className = "btn btn-default btn-lg btn-block";
+		saveButton.onclick = functionName;
+		saveButton.appendChild(document.createTextNode(text));
+		divSaveButton.appendChild(saveButton);
+		divFormGroup.appendChild(divSaveButton);
+		var element = document.getElementById("divFormHorizontal");
+		element.appendChild(divFormGroup);
+	}
 	
 	//For reading and posting data from XML file
 	function getDataFromXmlFile(){
@@ -509,7 +674,7 @@
 			for (i = 1; i < tr.length; i++) { //started from 1 because i don't want remove header
 			var controller = 0;
 			td = tr[i].getElementsByTagName("td");
-			for(j = 1; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
+			for(j = 0; j < td.length; j++){ //started from 1 because i don't want to check radio boxes
 				if (td[j]) {
 					if (td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
 						controller += 1 ;
@@ -591,6 +756,17 @@
 		xhttp.send(data);
 	}
 	
+	function saveNewCrystal(){
+		var name, planet, color, powerUsage, stockPrice = "";
+		name = document.getElementById("name_input").value;
+		planet = document.getElementById("planet_input").value;
+		color = document.getElementById("color_input").value;
+		powerUsage = document.getElementById("powerUsageMultiplier_input").value;
+		stockPrice = document.getElementById("stockPrice_input").value;
+		alert('{"name":"' + name + '","planet":"' + planet + '","color":"' + color + '","powerUsageMultiplier":' + powerUsage + ',"stockPrice":' + stockPrice +'}');
+		postData("crystal/add",'{"name":"' + name + '","planet":"' + planet + '","color":"' + color + '","powerUsageMultiplier":' + powerUsage + ',"stockPrice":' + stockPrice +'}');
+	}
+	
 	function saveNewLightSaber(){
 		var name, planet, available, crystal, combatForms = "";
 		name = document.getElementById("name_input").value;
@@ -612,14 +788,15 @@
     			combatForms = combatForms + ',{"id":'+ checkboxes[i].id +'}';
     		}
 	    }
+	    alert('{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
 		if(name == ""){
 			alert("Force doesn't like this name");
 		} else if (crystal == null){
 			alert("Light sabers gets their power from crystal, without crystal it will be useless");
 		}else if (available == ""){
-			postData205("saber/json",'{"name":"' + name + '", "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
+			postData205("saber/json",'{"name":"' + name + '", "crystal":{"id":' + crystal + '}, "saberCombatForms":[' + combatForms + ']}');
 		}else{
-			postData205("saber/json",'{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "combatForm":[' + combatForms + ']}');
+			postData205("saber/json",'{"name":"' + name + '","available":' + available + ', "crystal":{"id":' + crystal + '}, "saberCombatForms":[' + combatForms + ']}');
 		}
 	}
 	
@@ -804,7 +981,92 @@
 	}
 	
 	//For geting light sabers and after that sorts and filters it
-	function getOrderListSorted() {
+	function getStockListSorted() {
+		var myArr, myObj, x;
+		var xhttp = new XMLHttpRequest();
+		xhttp.onreadystatechange = function() {
+			if (this.readyState == 4 && this.status == 200) {
+				myObj = JSON.parse(this.responseText);
+				var combatFilterValue = document.getElementById("combatFilter").value;
+				if(combatFilterValue != "all"){
+					var removeFromArr = [];
+					for(x in myObj){
+						var counter = true;
+						innerLoop:
+						for(y in myObj[x].saberCombatForms){
+							if(myObj[x].saberCombatForms[y].name == combatFilterValue) {
+								counter = false;
+								break innerLoop;
+							}
+						}
+						if(counter) removeFromArr.push(x);
+					}
+					removeFromArr.sort(function(a, b){return b - a});
+					
+					for(x in removeFromArr) {
+						myObj.splice(removeFromArr[x],1);
+					}
+				}
+				var tableBody = document.getElementById("tBody");
+				tableBody.innerHTML="";
+				var rowHeader =  document.createElement("TR");
+				rowHeader.className = "header";
+				var headerTexts = ["Id","Image","Saber Name","Available","Power Usage", "Price","Crystal Name","Crystal Color"];
+				for(x in headerTexts){
+					var header =  document.createElement("TH");
+					header.innerHTML = headerTexts[x];
+					rowHeader.appendChild(header);
+				}
+				tableBody.appendChild(rowHeader);
+				if(myObj.length > 0){
+					myObj = sortArray(myObj);
+					for(x in myObj){
+						var row =  document.createElement("TR");
+						row.id = myObj[x].id + "_row";
+						var columnId =  document.createElement("TD");
+						columnId.innerHTML = myObj[x].id;
+						row.appendChild(columnId);
+						var columnSaberImage =  document.createElement("TD");
+						row.appendChild(columnSaberImage);
+						var saberImage =  document.createElement("IMG");
+						saberImage.height = "20";
+						columnSaberImage.appendChild(saberImage);
+						var picColor = myObj[x].crystal.color.toLowerCase();
+						if(picColor == "blue" || picColor == "green" || picColor == "purple" || picColor == "yellow" || picColor == "orange" || picColor == "red"){
+							saberImage.src = "/pictures/light_saber_" + picColor + ".png";
+						}else{
+							saberImage.src = "/pictures/light_saber_unknown.png";
+						}
+						var columnSaberName =  document.createElement("TD");
+						columnSaberName.innerHTML = myObj[x].name;
+						row.appendChild(columnSaberName);
+						var columnAvailable =  document.createElement("TD");
+						columnAvailable.innerHTML = myObj[x].available;
+						row.appendChild(columnAvailable);
+						var columnForce =  document.createElement("TD");
+						columnForce.innerHTML = myObj[x].crystal.powerUsageMultiplier;
+						row.appendChild(columnForce);
+						var columnPrice =  document.createElement("TD");
+						columnPrice.innerHTML = myObj[x].crystal.calculatedPrice;
+						row.appendChild(columnPrice);
+						var columnCrystalName =  document.createElement("TD");
+						columnCrystalName.innerHTML = myObj[x].crystal.name;
+						row.appendChild(columnCrystalName);
+						var columnCrystalColor =  document.createElement("TD");
+						columnCrystalColor.innerHTML = myObj[x].crystal.color;
+						row.appendChild(columnCrystalColor);
+						tableBody.appendChild(row);
+					}
+				}
+			}
+		};
+		xhttp.open("GET", "http://localhost:8082/Jedisabershop/saber/json");
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send();
+	}
+	
+	//For geting orders and after that sorts it
+	function getOrdersSorted() {
 		var myObj, x;
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
@@ -822,7 +1084,7 @@
 				tableBody.appendChild(rowHeader);
 				myObj = JSON.parse(this.responseText);
 				if(myObj.length > 0){
-					myArr = sortArray(myObj);
+					myObj = sortArray(myObj);
 					for(x in myObj){
 						var row =  document.createElement("TR");
 						row.id = myObj[x].id + "_row";
@@ -965,7 +1227,15 @@
 		var xhttp = new XMLHttpRequest();
 		xhttp.onreadystatechange = function() {
 			if (this.readyState == 4 && this.status == 202) {
-				document.getElementById("Container").innerHTML = this.responseText+" Item Added";
+				switch(api){
+				case "crystal/add":
+					var header = document.getElementById("header_result");
+					header.innerHTML = "Force Accepted This " + this.responseText;
+					var span = document.createElement("SPAN");
+					span.className = "glyphicon glyphicon-ok";
+					header.appendChild(span);
+					break;
+				}
 			}
 		};
 		xhttp.open("POST", "http://localhost:8082/Jedisabershop/" + api, true);
@@ -1161,6 +1431,15 @@
 		element.appendChild(option);
 	};
 	
+	function addCombatFormSelectOptions(){
+		var optionsCombatForm = [{name:"All Combat Forms", value:"all"},{name:"Shii-Cho", value:"Shii-Cho"},{name:"Makashi", value:"Makashi"},
+			{name:"Soresu", value:"Soresu"},{name:"Ataru", value:"Ataru"},{name:"Shien (Djem So)", value:"Shien (Djem So)"},
+			{name:"Niman", value:"Niman"},{name:"Juyo (Vaapad)", value:"Juyo (Vaapad)"}];
+		for (x in optionsCombatForm){
+			addOption("combatFilter", optionsCombatForm[x].name,  optionsCombatForm[x].value);
+		};
+	}
+	
 	//---------------------------------------------//
 	//     R E U S A B L E   C O D E S   E N D     //
 	//---------------------------------------------//
@@ -1182,10 +1461,14 @@
         <li id="jediMasterMenu" class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Jedi Master Menu<span class="caret"></span></a>
           <ul class="dropdown-menu">
+          	<li><a onclick='changeTo("Add New Crystal")'>Add New Crystal</a></li>
+          	<li role="separator" class="divider"></li>
             <li><a onclick='changeTo("Add New Light Saber")'>Add New Light Saber</a></li>
             <li><a onclick='changeTo("Add Light Sabers From XML File")'>Add Light Sabers From XML File</a></li>
             <li role="separator" class="divider"></li>
             <li><a onclick='changeTo("Light Saber Stock List")'>Stock List</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a onclick='changeTo("Orders")'>Orders</a></li>
           </ul>
         </li>
 	    </ul>

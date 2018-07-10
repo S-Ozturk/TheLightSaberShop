@@ -106,6 +106,8 @@ public class SaberEndpoint {
 				List<CombatForm> combatForms = new ArrayList<CombatForm>();
 				combatForms.add(combatFormService.getCombatFormByName("Shii-Cho"));
 				tempSaber.setSaberCombatForms(combatForms);
+			}else {
+				tempSaber.setSaberCombatForms(s.getSaberCombatForms());
 			}
 			//First checking crystal's name and color
 			if(s.getCrystal().getName() != null && s.getCrystal().getColor() != null) {
@@ -117,6 +119,9 @@ public class SaberEndpoint {
 					Crystal newCrystal = new Crystal();
 					newCrystal.setName(s.getCrystal().getName());
 					newCrystal.setColor(s.getCrystal().getColor());
+					newCrystal.setPowerUsageMultiplier(s.getCrystal().getPowerUsageMultiplier());
+					newCrystal.setStockPrice(s.getCrystal().getStockPrice());
+					newCrystal.setPlanet(s.getCrystal().getPlanet());
 					if(s.getCrystal().getPlanet() == null)newCrystal.setPlanet("Unknown"); 
 					tempSaber.setCrystal(crystalService.addCrystal(newCrystal));
 				}
